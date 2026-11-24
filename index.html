@@ -1,0 +1,3051 @@
+<!doctype html>
+<html lang="ko"><head>
+    
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스마트 암기장 - 나만의 맞춤형 디지털 플래시카드</title>
+    <meta name="description" content="원하는 과목의 플래시카드를 직접 만들고 뒤집기와 오답 복습으로 효율적으로 암기하는 맞춤형 디지털 암기장입니다.">
+    <meta property="og:title" content="스마트 암기장 - 나만의 맞춤형 디지털 플래시카드">
+    <meta property="og:description" content="원하는 과목의 플래시카드를 직접 만들고 뒤집기와 오답 복습으로 효율적으로 암기하는 맞춤형 디지털 암기장입니다.">
+    <meta property="og:type" content="website">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&amp;family=Noto+Sans+KR:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --bg-canvas: #f5f8fd;
+        --bg-surface: #ffffff;
+        --bg-subtle: #f8fafc;
+        --bg-indigo-tint: #eef2ff;
+        --bg-sky-tint: #f0f6ff;
+        --border-subtle: #e2e8f0;
+        --border-indigo: #c7d2fe;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --accent: #4f46e5;
+        --accent-hover: #4338ca;
+        --accent-soft: #e0e7ff;
+        --emerald-bg: #ecfdf5;
+        --emerald-border: #a7f3d0;
+        --emerald-text: #047857;
+        --rose-bg: #fff1f2;
+        --rose-border: #fecdd3;
+        --rose-text: #be123c;
+        --font-sans: 'Plus Jakarta Sans', 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif;
+        --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100%;
+        font-family: var(--font-sans);
+        background-color: var(--bg-canvas);
+        color: var(--text-primary);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      button,
+      input,
+      textarea {
+        font-family: inherit;
+      }
+
+      button {
+        cursor: pointer;
+      }
+
+      .tabular-nums {
+        font-variant-numeric: tabular-nums;
+      }
+
+      .font-mono-tabular {
+        font-family: var(--font-mono);
+        font-variant-numeric: tabular-nums;
+      }
+
+      /* Shell Layout */
+      .app-shell {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Header - 3-Zone Top Bar */
+      .top-header {
+        position: sticky;
+        top: 0;
+        z-index: 30;
+        background: rgba(255, 255, 255, 0.94);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid rgba(226, 232, 240, 0.85);
+      }
+
+      .header-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 12px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .header-inner {
+          padding: 14px 24px;
+          gap: 32px;
+        }
+      }
+
+      .brand-btn {
+        background: none;
+        border: none;
+        padding: 4px 2px;
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      @media (min-width: 640px) {
+        .brand-btn {
+          font-size: 18px;
+        }
+      }
+
+      .main-nav {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .main-nav {
+          gap: 28px;
+        }
+      }
+
+      .nav-link {
+        position: relative;
+        background: none;
+        border: none;
+        padding: 6px 2px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        white-space: nowrap;
+        flex-shrink: 0;
+        transition: color 0.15s ease;
+      }
+
+      @media (min-width: 640px) {
+        .nav-link {
+          font-size: 14px;
+        }
+      }
+
+      .nav-link:hover {
+        color: var(--text-primary);
+      }
+
+      .nav-link.is-active {
+        color: var(--accent-hover);
+        font-weight: 700;
+      }
+
+      .nav-link.is-active::after {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: -13px;
+        height: 2px;
+        background: var(--accent);
+      }
+
+      @media (min-width: 640px) {
+        .nav-link.is-active::after {
+          bottom: -15px;
+        }
+      }
+
+      .nav-short {
+        display: inline;
+      }
+      .nav-full {
+        display: none;
+      }
+      @media (min-width: 640px) {
+        .nav-short {
+          display: none;
+        }
+        .nav-full {
+          display: inline;
+        }
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 13px;
+        padding: 9px 14px;
+        border: 1px solid transparent;
+        transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease, transform 0.1s ease;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      @media (min-width: 640px) {
+        .btn {
+          font-size: 14px;
+        }
+      }
+
+      .btn:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+      }
+
+      .btn-primary {
+        background: var(--accent);
+        color: #ffffff;
+        box-shadow: 0 1px 2px rgba(79, 70, 229, 0.18);
+      }
+
+      .btn-primary:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+
+      .btn-soft-indigo {
+        background: var(--bg-indigo-tint);
+        border-color: var(--border-indigo);
+        color: var(--accent-hover);
+      }
+
+      .btn-soft-indigo:hover:not(:disabled) {
+        background: var(--accent-soft);
+      }
+
+      .btn-outline {
+        background: var(--bg-surface);
+        border-color: var(--border-subtle);
+        color: #334155;
+      }
+
+      .btn-outline:hover:not(:disabled) {
+        background: var(--bg-subtle);
+        border-color: #cbd5e1;
+      }
+
+      .btn-soft-rose {
+        background: var(--rose-bg);
+        border-color: var(--rose-border);
+        color: var(--rose-text);
+      }
+
+      .btn-soft-rose:hover:not(:disabled) {
+        background: #ffe4e6;
+      }
+
+      .btn-danger {
+        background: #e11d48;
+        color: #ffffff;
+      }
+
+      .btn-danger:hover:not(:disabled) {
+        background: #be123c;
+      }
+
+      .btn-header-cta {
+        padding: 7px 11px;
+        font-size: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .btn-header-cta {
+          padding: 9px 15px;
+          font-size: 14px;
+        }
+      }
+
+      /* Main Layout */
+      .main-container {
+        width: 100%;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 20px 16px 40px;
+        flex: 1;
+      }
+
+      @media (min-width: 640px) {
+        .main-container {
+          padding: 30px 24px 48px;
+        }
+      }
+
+      .workspace-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      @media (min-width: 1024px) {
+        .workspace-grid {
+          flex-direction: row;
+          align-items: flex-start;
+          gap: 32px;
+        }
+      }
+
+      /* Deck Sidebar */
+      .sidebar {
+        width: 100%;
+      }
+
+      @media (min-width: 1024px) {
+        .sidebar {
+          width: 288px;
+          flex-shrink: 0;
+        }
+      }
+
+      .mobile-decks-wrap {
+        display: block;
+      }
+
+      .desktop-decks-card {
+        display: none;
+      }
+
+      @media (min-width: 1024px) {
+        .mobile-decks-wrap {
+          display: none;
+        }
+        .desktop-decks-card {
+          display: block;
+          background: var(--bg-surface);
+          border: 1px solid var(--border-subtle);
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+        }
+      }
+
+      .mobile-decks-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 8px;
+        padding: 0 2px;
+      }
+
+      .mobile-decks-scroll {
+        display: flex;
+        gap: 10px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+
+      .mobile-deck-item {
+        min-width: 160px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-surface);
+        color: #334155;
+      }
+
+      .mobile-deck-item.is-active {
+        border-color: #a5b4fc;
+        background: var(--bg-indigo-tint);
+        color: #1e1b4b;
+      }
+
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px 18px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .sidebar-title-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .deck-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+
+      .deck-row {
+        position: relative;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .deck-row:last-child {
+        border-bottom: none;
+      }
+
+      .deck-select-btn {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+        padding: 14px 68px 14px 18px;
+        background: var(--bg-surface);
+        border: none;
+        transition: background-color 0.15s ease;
+      }
+
+      .deck-select-btn:hover {
+        background: var(--bg-subtle);
+      }
+
+      .deck-select-btn.is-active {
+        background: rgba(238, 242, 255, 0.8);
+      }
+
+      .deck-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .deck-meta {
+        margin-top: 4px;
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .deck-row-actions {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+      }
+
+      .deck-row:hover .deck-row-actions,
+      .deck-row:focus-within .deck-row-actions {
+        opacity: 1;
+      }
+
+      .icon-btn {
+        background: none;
+        border: none;
+        padding: 6px;
+        border-radius: 8px;
+        color: #94a3b8;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.15s ease, color 0.15s ease;
+      }
+
+      .icon-btn:hover {
+        background: #f1f5f9;
+        color: #334155;
+      }
+
+      .icon-btn.danger:hover {
+        background: var(--rose-bg);
+        color: var(--rose-text);
+      }
+
+      .sidebar-footer {
+        background: rgba(248, 250, 252, 0.75);
+        border-top: 1px solid #f1f5f9;
+        padding: 14px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .sidebar-transfer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+
+      .text-link-btn {
+        background: none;
+        border: none;
+        padding: 2px 0;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        white-space: nowrap;
+      }
+
+      .text-link-btn:hover {
+        color: var(--accent);
+      }
+
+      /* Main Stage */
+      .stage-col {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .panel-card {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+      }
+
+      @media (min-width: 640px) {
+        .panel-card {
+          padding: 24px;
+        }
+      }
+
+      .stage-header-top {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .stage-header-top {
+          flex-direction: row;
+          align-items: flex-end;
+          justify-content: space-between;
+        }
+      }
+
+      .kicker-meta {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+
+      .deck-heading {
+        margin: 4px 0 0;
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text-primary);
+      }
+
+      @media (min-width: 640px) {
+        .deck-heading {
+          font-size: 24px;
+        }
+      }
+
+      .progress-summary {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--accent-hover);
+      }
+
+      .progress-track {
+        margin-top: 14px;
+        height: 10px;
+        width: 100%;
+        border-radius: 999px;
+        background: var(--bg-indigo-tint);
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
+        transition: width 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+      }
+
+      .toolbar-row {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f1f5f9;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .toolbar-group {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* 3D Flashcard */
+      .flashcard-perspective {
+        perspective: 1400px;
+        width: 100%;
+      }
+
+      .flashcard-inner {
+        position: relative;
+        width: 100%;
+        min-height: 320px;
+        transform-style: preserve-3d;
+        transition: transform 0.52s cubic-bezier(0.22, 1, 0.36, 1);
+        cursor: pointer;
+        user-select: none;
+        border-radius: 18px;
+      }
+
+      @media (min-width: 640px) {
+        .flashcard-inner {
+          min-height: 370px;
+        }
+      }
+
+      .flashcard-inner.is-flipped {
+        transform: rotateY(180deg);
+      }
+
+      .flashcard-face {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        border-radius: 18px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        box-shadow: 0 4px 16px rgba(79, 70, 229, 0.05);
+      }
+
+      @media (min-width: 640px) {
+        .flashcard-face {
+          padding: 32px;
+        }
+      }
+
+      .flashcard-front {
+        background: #ffffff;
+        border: 1px solid #e0e7ff;
+      }
+
+      .flashcard-front:hover {
+        border-color: #c7d2fe;
+      }
+
+      .flashcard-back {
+        transform: rotateY(180deg);
+        background: linear-gradient(145deg, #eef4ff 0%, #ffffff 55%, #f3f7ff 100%);
+        border: 1px solid #c7d2fe;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .flashcard-inner {
+          transition: opacity 0.15s ease;
+        }
+        .flashcard-inner.is-flipped {
+          transform: none;
+        }
+        .flashcard-inner.is-flipped .flashcard-front {
+          opacity: 0;
+          pointer-events: none;
+        }
+        .flashcard-inner:not(.is-flipped) .flashcard-back {
+          opacity: 0;
+          pointer-events: none;
+        }
+        .flashcard-back {
+          transform: none;
+        }
+      }
+
+      .card-face-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 13px;
+      }
+
+      .card-face-body {
+        margin: auto 0;
+        padding: 20px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+
+      .card-front-text {
+        margin: 0;
+        max-width: 580px;
+        font-size: 26px;
+        font-weight: 700;
+        line-height: 1.38;
+        color: var(--text-primary);
+        white-space: pre-line;
+        word-break: keep-all;
+      }
+
+      @media (min-width: 640px) {
+        .card-front-text {
+          font-size: 36px;
+        }
+      }
+
+      .card-back-sub {
+        margin: 0 0 8px;
+        font-size: 13px;
+        font-weight: 500;
+        color: #94a3b8;
+        max-width: 540px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .card-back-text {
+        margin: 0;
+        max-width: 580px;
+        font-size: 20px;
+        font-weight: 600;
+        line-height: 1.55;
+        color: var(--text-primary);
+        white-space: pre-line;
+        word-break: keep-all;
+      }
+
+      @media (min-width: 640px) {
+        .card-back-text {
+          font-size: 24px;
+        }
+      }
+
+      .card-face-bottom {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding-top: 14px;
+        border-top: 1px solid rgba(226, 232, 240, 0.7);
+      }
+
+      .hint-text {
+        font-size: 12px;
+        color: #94a3b8;
+      }
+
+      /* Large O/X Study Action Buttons */
+      .grade-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .grade-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .grade-btn {
+        min-height: 58px;
+        border-radius: 16px;
+        padding: 14px 20px;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: transform 0.1s ease, background-color 0.16s ease;
+      }
+
+      .grade-btn:active {
+        transform: scale(0.99);
+      }
+
+      .grade-btn-review {
+        background: var(--rose-bg);
+        border: 1px solid var(--rose-border);
+        color: var(--rose-text);
+      }
+
+      .grade-btn-review:hover {
+        background: #ffe4e6;
+      }
+
+      .grade-btn-mastered {
+        background: var(--accent);
+        border: 1px solid var(--accent);
+        color: #ffffff;
+        box-shadow: 0 2px 8px rgba(79, 70, 229, 0.22);
+      }
+
+      .grade-btn-mastered:hover {
+        background: var(--accent-hover);
+      }
+
+      .nav-browse-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 4px 2px 0;
+      }
+
+      /* Empty & Completion States */
+      .center-box {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 18px;
+        padding: 40px 24px;
+        text-align: center;
+      }
+
+      .center-box.is-celebrate {
+        border-color: var(--emerald-border);
+        background: linear-gradient(180deg, rgba(236, 253, 245, 0.75) 0%, #ffffff 60%);
+      }
+
+      .center-icon-badge {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg-indigo-tint);
+        color: var(--accent);
+      }
+
+      .center-icon-badge.is-emerald {
+        background: #d1fae5;
+        color: var(--emerald-text);
+      }
+
+      /* Segmented Controls, Inputs, Lists */
+      .segmented {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px;
+        border-radius: 12px;
+        background: #f1f5f9;
+      }
+
+      .seg-btn {
+        border: none;
+        background: transparent;
+        padding: 7px 14px;
+        border-radius: 9px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text-secondary);
+        white-space: nowrap;
+      }
+
+      .seg-btn.is-active {
+        background: #ffffff;
+        color: var(--accent-hover);
+        box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+      }
+
+      .form-grid-2 {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 16px;
+      }
+
+      @media (min-width: 640px) {
+        .form-grid-2 {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+
+      .field-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 600;
+        color: #334155;
+        margin-bottom: 6px;
+      }
+
+      .input-box,
+      .textarea-box {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid #cbd5e1;
+        background: #ffffff;
+        padding: 10px 14px;
+        font-size: 14px;
+        color: var(--text-primary);
+        transition: border-color 0.15s ease, box-shadow 0.15s ease;
+      }
+
+      .input-box:focus,
+      .textarea-box:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.14);
+      }
+
+      .card-list-wrap {
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      .card-list-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f1f5f9;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      @media (min-width: 640px) {
+        .card-list-header {
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      .card-list-item {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .card-list-item:last-child {
+        border-bottom: none;
+      }
+
+      .card-list-item:hover {
+        background: rgba(248, 250, 252, 0.7);
+      }
+
+      .preview-box {
+        border-radius: 12px;
+        border: 1px solid var(--border-subtle);
+        background: rgba(248, 250, 252, 0.8);
+        padding: 14px 16px;
+      }
+
+      .preview-scroll {
+        max-height: 160px;
+        overflow-y: auto;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #e2e8f0;
+      }
+
+      /* Footer */
+      .app-footer {
+        border-top: 1px solid rgba(226, 232, 240, 0.8);
+        background: rgba(255, 255, 255, 0.75);
+      }
+
+      .footer-inner {
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 16px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        font-size: 12px;
+        color: var(--text-muted);
+      }
+
+      @media (min-width: 640px) {
+        .footer-inner {
+          padding: 16px 24px;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+        }
+      }
+
+      .footer-actions {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+      }
+
+      /* Modal */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(15, 23, 42, 0.42);
+        backdrop-filter: blur(2px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 16px;
+      }
+
+      .modal-panel {
+        width: 100%;
+        max-width: 480px;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid var(--border-subtle);
+        border-radius: 18px;
+        box-shadow: 0 20px 40px rgba(15, 23, 42, 0.18);
+      }
+
+      .modal-panel.is-wide {
+        max-width: 580px;
+      }
+
+      .modal-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 18px 22px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+
+      .modal-body {
+        padding: 20px 22px;
+        overflow-y: auto;
+      }
+
+      .modal-foot {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 20px;
+      }
+
+      /* Toast */
+      .toast-banner {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 60;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #0f172a;
+        color: #ffffff;
+        padding: 10px 16px;
+        border-radius: 12px;
+        border: 1px solid #c7d2fe;
+        font-size: 13px;
+        font-weight: 500;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22);
+        max-width: calc(100vw - 32px);
+      }
+
+      .status-mastered {
+        color: var(--emerald-text);
+        font-weight: 600;
+      }
+      .status-review {
+        color: var(--rose-text);
+        font-weight: 600;
+      }
+      .status-unstudied {
+        color: var(--text-muted);
+      }
+
+      .error-text {
+        margin-top: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--rose-text);
+      }
+
+      code.inline-code {
+        background: var(--bg-indigo-tint);
+        color: var(--accent-hover);
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      pre.export-preview {
+        margin: 0;
+        max-height: 128px;
+        overflow-y: auto;
+        background: var(--bg-subtle);
+        border: 1px solid #f1f5f9;
+        border-radius: 10px;
+        padding: 12px;
+        font-family: var(--font-mono);
+        font-size: 12px;
+        line-height: 1.55;
+        color: #334155;
+        white-space: pre-wrap;
+        word-break: break-all;
+      }
+
+      .search-wrap {
+        position: relative;
+      }
+
+      .search-wrap svg {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        pointer-events: none;
+      }
+
+      .search-input {
+        padding-left: 34px;
+        font-size: 13px;
+        background: var(--bg-subtle);
+      }
+    </style>
+  <script src="/_aistudio-iframe.js?v=29045eb3"></script><script src="https://cdn.jsdelivr.net/npm/html2canvas-pro@2.0.4"></script><style>.aistudio-hover-highlight { box-shadow: inset 0 0 0 0.5px white, inset 0 0 0 1.5px rgba(128,128,128,0.6) !important; }.aistudio-active-highlight { outline: 2px solid #87a9ff !important; outline-offset: -2px !important; box-shadow: 0 0 0 0.5px rgba(0,0,0,0.3), inset 0 0 0 0.5px rgba(0,0,0,0.3) !important; }.aistudio-generating-blur { filter: blur(5px) grayscale(100%) brightness(28%) !important; transition: filter 0.3s ease; }#aistudio-focus-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: #87a9ff; border-radius: 12px; z-index: 10000; padding: 8px; color: #32302c; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }#aistudio-hover-mode-tag { position: absolute; display: none; align-items: center; gap: 4px; background: rgba(128,128,128,0.6); border-radius: 12px; z-index: 10000; padding: 8px; color: white; font-family: Inter, sans-serif; font-size: 14px; font-style: normal; font-weight: 500; line-height: 21px; pointer-events: none; }.aistudio-img-icon { display: none; vertical-align: middle; pointer-events: auto; cursor: pointer; }.aistudio-img-icon.visible { display: inline-flex; }#aistudio-focus-mode-tag .aistudio-img-icon { position: relative; width: 26px; height: 26px; background: #32302c; border-radius: 6px; margin: -4px -4px -4px 0; }#aistudio-focus-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 4px; left: 4px; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-hover-mode-tag .aistudio-img-icon { position: relative; width: 18px; height: 18px; margin-left: 4px; }#aistudio-hover-mode-tag .aistudio-img-icon::before { content: ""; position: absolute; top: 0; left: 0; width: 18px; height: 18px; background-color: white; -webkit-mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; mask-image: url("https://fonts.gstatic.com/s/i/short-term/release/googlesymbols/edit_fix_auto/default/24px.svg"); mask-size: contain; mask-repeat: no-repeat; }#aistudio-focus-mode-tag .aistudio-img-icon:hover, #aistudio-hover-mode-tag .aistudio-img-icon:hover { background: #424242 !important; }#aistudio-focus-mode-tag .aistudio-img-icon:active, #aistudio-hover-mode-tag .aistudio-img-icon:active { background: #393f51 !important; }</style></head>
+  <body>
+    <div id="app"></div>
+    <div id="modal-root"></div>
+    <div id="toast-root"></div>
+
+    <script>
+      (function () {
+        // Capture pristine single-file HTML before runtime DOM renders or Vite dev script runs
+        var PRISTINE_HTML = '';
+        try {
+          var docClone = document.documentElement.cloneNode(true);
+          var scripts = docClone.querySelectorAll('script[src]');
+          for (var si = 0; si < scripts.length; si++) {
+            var src = scripts[si].getAttribute('src') || '';
+            if (src.indexOf('@vite') !== -1 || src.indexOf('react-refresh') !== -1) {
+              scripts[si].parentNode.removeChild(scripts[si]);
+            }
+          }
+          var appEl = docClone.querySelector('#app');
+          if (appEl) appEl.innerHTML = '';
+          var modalEl = docClone.querySelector('#modal-root');
+          if (modalEl) modalEl.innerHTML = '';
+          var toastEl = docClone.querySelector('#toast-root');
+          if (toastEl) toastEl.innerHTML = '';
+          PRISTINE_HTML = '<!doctype html>\n' + docClone.outerHTML;
+        } catch (e) {
+          PRISTINE_HTML = '';
+        }
+
+        var STORAGE_DECKS_KEY = 'smart_flashcard_maker_decks_v1';
+        var STORAGE_ACTIVE_KEY = 'smart_flashcard_maker_active_deck_v1';
+
+        var BULK_EXAMPLE =
+          'ubiquitous : 어디에나 존재하는\n' +
+          'ephemeral : 수명이 짧은, 덧없는\n' +
+          'serendipity : 뜻밖의 행운\n' +
+          '광합성 : 빛 에너지를 이용해 포도당을 합성하는 과정\n' +
+          '삼투 현상 : 물이 농도가 낮은 곳에서 높은 곳으로 이동하는 현상';
+
+        function createSampleDecks() {
+          var base = 1700000000000;
+          return [
+            {
+              id: 'sample-english',
+              title: '기초 영단어',
+              category: '영어 어휘',
+              isSample: true,
+              createdAt: base,
+              cards: [
+                {
+                  id: 'eng-1',
+                  front: 'resilient',
+                  back: '회복력이 있는, 탄력 있는\n(어려움을 딛고 빠르게 다시 일어서는)',
+                  status: 'unstudied',
+                  createdAt: base + 1,
+                },
+                {
+                  id: 'eng-2',
+                  front: 'ephemeral',
+                  back: '수명이 짧은, 덧없는\n(잠깐 머물다 금방 사라지는)',
+                  status: 'unstudied',
+                  createdAt: base + 2,
+                },
+                {
+                  id: 'eng-3',
+                  front: 'pragmatic',
+                  back: '실용적인, 현실적인\n(이론보다 실제 결과와 효율을 중시하는)',
+                  status: 'unstudied',
+                  createdAt: base + 3,
+                },
+                {
+                  id: 'eng-4',
+                  front: 'ubiquitous',
+                  back: '어디에나 존재하는\n(동시에 여러 곳에서 흔히 볼 수 있는)',
+                  status: 'unstudied',
+                  createdAt: base + 4,
+                },
+                {
+                  id: 'eng-5',
+                  front: 'meticulous',
+                  back: '꼼꼼한, 세심한\n(작은 세부 사항까지 주의를 기울이는)',
+                  status: 'unstudied',
+                  createdAt: base + 5,
+                },
+              ],
+            },
+            {
+              id: 'sample-history',
+              title: '한국사 핵심 개념',
+              category: '한국사',
+              isSample: true,
+              createdAt: base + 100,
+              cards: [
+                {
+                  id: 'his-1',
+                  front: '훈민정음 (1443)',
+                  back: '세종대왕이 백성이 쉽게 글을 읽고 쓸 수 있도록 창제한 우리 고유 문자 (1446년 반포)',
+                  status: 'unstudied',
+                  createdAt: base + 101,
+                },
+                {
+                  id: 'his-2',
+                  front: '대동법',
+                  back: '조선 후기 집집마다 내던 공물(특산물)을 토지 결수에 따라 쌀·베·동전으로 통일해 납부하게 한 세법',
+                  status: 'unstudied',
+                  createdAt: base + 102,
+                },
+                {
+                  id: 'his-3',
+                  front: '실학',
+                  back: '조선 후기 성리학의 공리공담을 비판하고 민생 안정과 부국강병을 추구한 실용적 학풍',
+                  status: 'unstudied',
+                  createdAt: base + 103,
+                },
+                {
+                  id: 'his-4',
+                  front: '갑오개혁 (1894)',
+                  back: '신분제 철폐, 과거제 폐지, 조혼 금지 등 근대적 사회·정치 제도를 본격적으로 도입한 개혁',
+                  status: 'unstudied',
+                  createdAt: base + 104,
+                },
+                {
+                  id: 'his-5',
+                  front: '3·1 운동 (1919)',
+                  back: '일제의 식민 통치에 항거해 전 민족이 참여한 비폭력 독립 만세 운동이자 대한민국 임시정부 수립의 계기',
+                  status: 'unstudied',
+                  createdAt: base + 105,
+                },
+              ],
+            },
+            {
+              id: 'sample-science',
+              title: '과학 필수 용어',
+              category: '자연과학',
+              isSample: true,
+              createdAt: base + 200,
+              cards: [
+                {
+                  id: 'sci-1',
+                  front: '광합성 (Photosynthesis)',
+                  back: '식물의 엽록체에서 빛 에너지를 이용해 이산화탄소와 물로부터 포도당과 산소를 합성하는 과정',
+                  status: 'unstudied',
+                  createdAt: base + 201,
+                },
+                {
+                  id: 'sci-2',
+                  front: '삼투 현상 (Osmosis)',
+                  back: '반투과성 막을 사이에 두고 용매(물)가 용질 농도가 낮은 곳에서 높은 곳으로 이동하는 현상',
+                  status: 'unstudied',
+                  createdAt: base + 202,
+                },
+                {
+                  id: 'sci-3',
+                  front: '만유인력의 법칙',
+                  back: '질량을 가진 모든 물체는 서로 끌어당기며, 그 힘은 두 질량의 곱에 비례하고 거리의 제곱에 반비례한다는 법칙',
+                  status: 'unstudied',
+                  createdAt: base + 203,
+                },
+                {
+                  id: 'sci-4',
+                  front: '전자기 유도',
+                  back: '코일 내부를 통과하는 자기선속(자기장)이 시간에 따라 변할 때 코일에 유도 전류가 흐르는 현상',
+                  status: 'unstudied',
+                  createdAt: base + 204,
+                },
+                {
+                  id: 'sci-5',
+                  front: '관성의 법칙 (뉴턴 제1법칙)',
+                  back: '외부에서 알짜힘이 작용하지 않으면 정지한 물체는 계속 정지해 있고, 운동하던 물체는 등속 직선 운동을 유지하려는 성질',
+                  status: 'unstudied',
+                  createdAt: base + 205,
+                },
+              ],
+            },
+          ];
+        }
+
+        function generateId(prefix) {
+          return (
+            (prefix || 'id') +
+            '-' +
+            Date.now().toString(36) +
+            '-' +
+            Math.random().toString(36).slice(2, 7)
+          );
+        }
+
+        function escapeHtml(str) {
+          return String(str == null ? '' : str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        function loadDecks() {
+          try {
+            var raw = window.localStorage.getItem(STORAGE_DECKS_KEY);
+            if (raw) {
+              var parsed = JSON.parse(raw);
+              if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+          } catch (e) {}
+          var defaults = createSampleDecks();
+          saveDecks(defaults);
+          return defaults;
+        }
+
+        function saveDecks(decks) {
+          try {
+            window.localStorage.setItem(STORAGE_DECKS_KEY, JSON.stringify(decks));
+          } catch (e) {}
+        }
+
+        function loadActiveDeckId(decks) {
+          try {
+            var id = window.localStorage.getItem(STORAGE_ACTIVE_KEY);
+            if (id && decks.some(function (d) { return d.id === id; })) return id;
+          } catch (e) {}
+          return decks[0] ? decks[0].id : '';
+        }
+
+        function saveActiveDeckId(id) {
+          try {
+            window.localStorage.setItem(STORAGE_ACTIVE_KEY, id);
+          } catch (e) {}
+        }
+
+        function shuffleArray(arr) {
+          var copy = arr.slice();
+          for (var i = copy.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var tmp = copy[i];
+            copy[i] = copy[j];
+            copy[j] = tmp;
+          }
+          return copy;
+        }
+
+        function parseBulkInput(rawText) {
+          var lines = String(rawText || '').split(/\r?\n/);
+          var results = [];
+          lines.forEach(function (line, idx) {
+            var trimmed = line.trim();
+            if (!trimmed) return;
+            var sepIdx = -1;
+            var sepLen = 1;
+            var tabIdx = trimmed.indexOf('\t');
+            var colonIdx = trimmed.indexOf(':');
+            var fullColonIdx = trimmed.indexOf('：');
+            if (colonIdx !== -1 && (tabIdx === -1 || colonIdx < tabIdx)) {
+              sepIdx = colonIdx;
+              sepLen = 1;
+            } else if (fullColonIdx !== -1) {
+              sepIdx = fullColonIdx;
+              sepLen = 1;
+            } else if (tabIdx !== -1) {
+              sepIdx = tabIdx;
+              sepLen = 1;
+            } else {
+              var dashIdx = trimmed.indexOf(' - ');
+              if (dashIdx !== -1) {
+                sepIdx = dashIdx;
+                sepLen = 3;
+              }
+            }
+
+            if (sepIdx === -1) {
+              results.push({
+                lineNumber: idx + 1,
+                raw: trimmed,
+                front: '',
+                back: '',
+                valid: false,
+                error: '구분자(:)가 없습니다. "단어 : 뜻" 형식으로 입력해 주세요.',
+              });
+              return;
+            }
+
+            var front = trimmed.slice(0, sepIdx).trim();
+            var back = trimmed.slice(sepIdx + sepLen).trim();
+            if (!front || !back) {
+              results.push({
+                lineNumber: idx + 1,
+                raw: trimmed,
+                front: front,
+                back: back,
+                valid: false,
+                error: !front ? '앞면(질문/단어)이 비어 있습니다.' : '뒷면(정답/뜻)이 비어 있습니다.',
+              });
+              return;
+            }
+            results.push({ lineNumber: idx + 1, raw: trimmed, front: front, back: back, valid: true });
+          });
+          return results;
+        }
+
+        function exportDeckToText(deck) {
+          return deck.cards
+            .map(function (c) {
+              return c.front.replace(/\r?\n/g, ' ').trim() + ' : ' + c.back.replace(/\r?\n/g, ' ').trim();
+            })
+            .join('\n');
+        }
+
+        function exportDeckToJson(deck) {
+          return JSON.stringify(
+            {
+              format: 'smart-flashcard-deck',
+              version: 1,
+              title: deck.title,
+              category: deck.category,
+              exportedAt: new Date().toISOString(),
+              cards: deck.cards.map(function (c) {
+                return { front: c.front, back: c.back, status: c.status };
+              }),
+            },
+            null,
+            2
+          );
+        }
+
+        function parseImportedDeckContent(rawContent, fallbackTitle) {
+          var trimmed = String(rawContent || '').trim();
+          var fb = fallbackTitle || '불러온 암기장';
+          if (!trimmed) return { ok: false, error: '불러올 내용이 비어 있습니다.' };
+
+          if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
+            try {
+              var parsed = JSON.parse(trimmed);
+              var rawCards = Array.isArray(parsed)
+                ? parsed
+                : parsed && typeof parsed === 'object' && Array.isArray(parsed.cards)
+                  ? parsed.cards
+                  : null;
+              if (!rawCards) {
+                return { ok: false, error: 'JSON 형식이지만 카드 목록(cards)을 찾을 수 없습니다.' };
+              }
+              var now = Date.now();
+              var validCards = [];
+              var skipped = 0;
+              rawCards.forEach(function (item, idx) {
+                if (item && typeof item === 'object' && 'front' in item && 'back' in item) {
+                  var f = String(item.front == null ? '' : item.front).trim();
+                  var b = String(item.back == null ? '' : item.back).trim();
+                  var st =
+                    item.status === 'mastered' || item.status === 'review' || item.status === 'unstudied'
+                      ? item.status
+                      : 'unstudied';
+                  if (f && b) {
+                    validCards.push({ id: generateId('card'), front: f, back: b, status: st, createdAt: now + idx });
+                    return;
+                  }
+                }
+                skipped += 1;
+              });
+              if (validCards.length === 0) {
+                return { ok: false, error: '유효한 카드(앞면/뒷면)가 포함된 항목이 없습니다.' };
+              }
+              var title =
+                !Array.isArray(parsed) && typeof parsed.title === 'string' && parsed.title.trim()
+                  ? parsed.title.trim()
+                  : fb;
+              var category =
+                !Array.isArray(parsed) && typeof parsed.category === 'string' && parsed.category.trim()
+                  ? parsed.category.trim()
+                  : '불러온 자료';
+              return { ok: true, title: title, category: category, sourceType: 'json', cards: validCards, skippedCount: skipped };
+            } catch (e) {
+              return { ok: false, error: 'JSON 문법이 올바르지 않습니다. 파일 내용을 확인해 주세요.' };
+            }
+          }
+
+          var lines = parseBulkInput(trimmed);
+          var now2 = Date.now();
+          var textCards = lines
+            .filter(function (l) { return l.valid; })
+            .map(function (l, i) {
+              return { id: generateId('card'), front: l.front, back: l.back, status: 'unstudied', createdAt: now2 + i };
+            });
+          if (textCards.length === 0) {
+            return { ok: false, error: '카드를 인식하지 못했습니다. JSON 백업 또는 "단어 : 뜻" 형식으로 입력해 주세요.' };
+          }
+          return {
+            ok: true,
+            title: fb,
+            category: '불러온 자료',
+            sourceType: 'text',
+            cards: textCards,
+            skippedCount: lines.filter(function (l) { return !l.valid; }).length,
+          };
+        }
+
+        function copyText(text) {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            return navigator.clipboard
+              .writeText(text)
+              .then(function () { return true; })
+              .catch(function () { return fallbackCopy(text); });
+          }
+          return Promise.resolve(fallbackCopy(text));
+        }
+
+        function fallbackCopy(text) {
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = text;
+            ta.setAttribute('readonly', '');
+            ta.style.position = 'fixed';
+            ta.style.top = '-9999px';
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            return ok;
+          } catch (e) {
+            return false;
+          }
+        }
+
+        function downloadBlob(filename, blob) {
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(function () { URL.revokeObjectURL(url); }, 1200);
+        }
+
+        // Pure Vanilla JS PKZIP (STORE + CRC32) - zero dependencies, works offline & file://
+        var crcTable = (function () {
+          var table = new Uint32Array(256);
+          for (var n = 0; n < 256; n++) {
+            var c = n;
+            for (var k = 0; k < 8; k++) {
+              c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
+            }
+            table[n] = c >>> 0;
+          }
+          return table;
+        })();
+
+        function crc32(bytes) {
+          var c = 0xffffffff;
+          for (var i = 0; i < bytes.length; i++) {
+            c = crcTable[(c ^ bytes[i]) & 0xff] ^ (c >>> 8);
+          }
+          return (c ^ 0xffffffff) >>> 0;
+        }
+
+        function createZipBlob(entries) {
+          var encoder = new TextEncoder();
+          var localParts = [];
+          var centralParts = [];
+          var offset = 0;
+
+          entries.forEach(function (entry) {
+            var nameBytes = encoder.encode(entry.path);
+            var dataBytes = encoder.encode(entry.content);
+            var crc = crc32(dataBytes);
+            var size = dataBytes.length;
+
+            // Local file header (30 bytes + filename)
+            var local = new Uint8Array(30 + nameBytes.length);
+            var lv = new DataView(local.buffer);
+            lv.setUint32(0, 0x04034b50, true);
+            lv.setUint16(4, 20, true);
+            lv.setUint16(6, 0x0800, true); // UTF-8
+            lv.setUint16(8, 0, true); // STORE
+            lv.setUint16(10, 0, true);
+            lv.setUint16(12, 0, true);
+            lv.setUint32(14, crc, true);
+            lv.setUint32(18, size, true);
+            lv.setUint32(22, size, true);
+            lv.setUint16(26, nameBytes.length, true);
+            lv.setUint16(28, 0, true);
+            local.set(nameBytes, 30);
+
+            localParts.push(local, dataBytes);
+
+            // Central directory header (46 bytes + filename)
+            var central = new Uint8Array(46 + nameBytes.length);
+            var cv = new DataView(central.buffer);
+            cv.setUint32(0, 0x02014b50, true);
+            cv.setUint16(4, 20, true);
+            cv.setUint16(6, 20, true);
+            cv.setUint16(8, 0x0800, true);
+            cv.setUint16(10, 0, true);
+            cv.setUint16(12, 0, true);
+            cv.setUint16(14, 0, true);
+            cv.setUint32(16, crc, true);
+            cv.setUint32(20, size, true);
+            cv.setUint32(24, size, true);
+            cv.setUint16(28, nameBytes.length, true);
+            cv.setUint16(30, 0, true);
+            cv.setUint16(32, 0, true);
+            cv.setUint16(34, 0, true);
+            cv.setUint16(36, 0, true);
+            cv.setUint32(38, 0, true);
+            cv.setUint32(42, offset, true);
+            central.set(nameBytes, 46);
+
+            centralParts.push(central);
+            offset += local.length + dataBytes.length;
+          });
+
+          var centralSize = centralParts.reduce(function (sum, arr) { return sum + arr.length; }, 0);
+          var end = new Uint8Array(22);
+          var ev = new DataView(end.buffer);
+          ev.setUint32(0, 0x06054b50, true);
+          ev.setUint16(4, 0, true);
+          ev.setUint16(6, 0, true);
+          ev.setUint16(8, entries.length, true);
+          ev.setUint16(10, entries.length, true);
+          ev.setUint32(12, centralSize, true);
+          ev.setUint32(16, offset, true);
+          ev.setUint16(20, 0, true);
+
+          return new Blob(localParts.concat(centralParts, [end]), { type: 'application/zip' });
+        }
+
+        // Crisp inline SVG icons
+        var ICONS = {
+          plus: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>',
+          book: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>',
+          pencil: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>',
+          trash: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+          rotateCcw: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>',
+          rotateCw: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/></svg>',
+          shuffle: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 18h1.4c1.3 0 2.5-.6 3.3-1.7l6.1-8.6c.7-1.1 2-1.7 3.3-1.7H22"/><path d="m18 2 4 4-4 4"/><path d="M2 6h1.9c1.5 0 2.9.9 3.6 2.2"/><path d="M22 18h-5.9c-1.3 0-2.6-.7-3.3-1.8l-.5-.8"/><path d="m18 14 4 4-4 4"/></svg>',
+          checkCircle: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+          checkCircleSm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>',
+          xCircle: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+          xCircleSm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>',
+          trophy: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>',
+          layers: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>',
+          chevLeft: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>',
+          chevRight: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+          download: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>',
+          upload: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>',
+          copy: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>',
+          check: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+          search: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>',
+          close: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+          alert: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>',
+          fileText: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+        };
+
+        // Application State
+        var initialDecks = loadDecks();
+        var initialActiveId = loadActiveDeckId(initialDecks);
+        var initialDeck = initialDecks.find(function (d) { return d.id === initialActiveId; }) || initialDecks[0];
+
+        var state = {
+          decks: initialDecks,
+          activeDeckId: initialDeck ? initialDeck.id : '',
+          activeView: 'study', // 'study' | 'manage'
+          manageTab: 'single', // 'single' | 'bulk'
+          studyMode: 'all', // 'all' | 'review'
+          studyQueueIds: initialDeck ? initialDeck.cards.map(function (c) { return c.id; }) : [],
+          currentIndex: 0,
+          isFlipped: false,
+          sessionCompleted: false,
+          // Manage view inputs
+          singleFront: '',
+          singleBack: '',
+          singleError: '',
+          bulkText: '',
+          searchQuery: '',
+          statusFilter: 'all',
+          editingCardId: null,
+          editFront: '',
+          editBack: '',
+          // Modals
+          deckModal: { open: false, mode: 'create', targetDeckId: '', title: '', category: '', error: '' },
+          confirmModal: { open: false, type: '' , deckId: '' },
+          transferModal: { open: false, tab: 'export', copiedKey: '', importRaw: '', importTitle: '', importCategory: '', filenameTitle: '' },
+          toast: '',
+        };
+
+        var toastTimer = null;
+
+        function getActiveDeck() {
+          return state.decks.find(function (d) { return d.id === state.activeDeckId; }) || state.decks[0];
+        }
+
+        function persist() {
+          saveDecks(state.decks);
+          if (state.activeDeckId) saveActiveDeckId(state.activeDeckId);
+        }
+
+        function showToast(msg) {
+          state.toast = msg;
+          renderToast();
+          if (toastTimer) clearTimeout(toastTimer);
+          toastTimer = setTimeout(function () {
+            state.toast = '';
+            renderToast();
+          }, 2600);
+        }
+
+        function initQueueForDeck(deck, mode) {
+          var m = mode || 'all';
+          state.studyMode = m;
+          state.studyQueueIds =
+            m === 'review'
+              ? deck.cards.filter(function (c) { return c.status === 'review'; }).map(function (c) { return c.id; })
+              : deck.cards.map(function (c) { return c.id; });
+          state.currentIndex = 0;
+          state.isFlipped = false;
+          state.sessionCompleted = false;
+        }
+
+        function buildStandaloneHtmlString() {
+          if (PRISTINE_HTML) return PRISTINE_HTML;
+          var clone = document.documentElement.cloneNode(true);
+          var scripts = clone.querySelectorAll('script[src]');
+          for (var i = 0; i < scripts.length; i++) {
+            var s = scripts[i].getAttribute('src') || '';
+            if (s.indexOf('@vite') !== -1 || s.indexOf('react-refresh') !== -1) {
+              scripts[i].parentNode.removeChild(scripts[i]);
+            }
+          }
+          var a = clone.querySelector('#app');
+          if (a) a.innerHTML = '';
+          var m = clone.querySelector('#modal-root');
+          if (m) m.innerHTML = '';
+          var t = clone.querySelector('#toast-root');
+          if (t) t.innerHTML = '';
+          return '<!doctype html>\n' + clone.outerHTML;
+        }
+
+        function buildStaticReadme() {
+          return (
+            '# 스마트 암기장 (Smart Flashcard Maker)\n\n' +
+            '프레임워크, npm, 빌드 과정 없이 **`index.html` 단일 파일**로 동작하는 맞춤형 디지털 플래시카드 웹 애플리케이션입니다.\n\n' +
+            '## 실행 및 배포 방법\n\n' +
+            '1. **로컬에서 바로 실행**: `index.html` 파일을 더블 클릭하면 브라우저에서 즉시 실행됩니다.\n' +
+            '2. **GitHub 업로드 및 Vercel 즉시 배포**:\n' +
+            '   - `index.html`과 `README.md`를 GitHub 저장소에 업로드합니다.\n' +
+            '   - Vercel에서 해당 저장소를 연결하면 별도 Build Command 설정 없이 정적 사이트로 즉시 배포됩니다.\n\n' +
+            '## 주요 기능\n\n' +
+            '- 기본 샘플 암기장 3종 제공 (`기초 영단어`, `한국사 핵심 개념`, `과학 필수 용어`)\n' +
+            '- 카드 개별 추가/수정/삭제 및 `"단어 : 뜻"` 빠른 일괄 등록\n' +
+            '- 3D 카드 뒤집기 애니메이션 및 키보드 단축키 (`Space`, `X`/`←`, `O`/`→`)\n' +
+            '- 오답만 다시 학습하기(정답 시 오답 목록 자동 제외, 전체 완료 시 `오답 복습 완료!` 축하 화면)\n' +
+            '- 단어장 `.txt` / `.json` 내보내기 · 복사하기 · 불러오기\n'
+          );
+        }
+
+        function statusMeta(status) {
+          if (status === 'mastered') {
+            return { text: '암기 완료', cls: 'status-mastered', icon: ICONS.checkCircleSm };
+          }
+          if (status === 'review') {
+            return { text: '다시 복습', cls: 'status-review', icon: ICONS.xCircleSm };
+          }
+          return { text: '학습 전', cls: 'status-unstudied', icon: '' };
+        }
+
+        function renderHeader() {
+          var isStudy = state.activeView === 'study';
+          var isSingle = state.activeView === 'manage' && state.manageTab === 'single';
+          var isBulk = state.activeView === 'manage' && state.manageTab === 'bulk';
+
+          return (
+            '<header class="top-header">' +
+            '  <div class="header-inner">' +
+            '    <button type="button" class="brand-btn" data-action="nav-study">스마트 암기장</button>' +
+            '    <nav class="main-nav" aria-label="주 메뉴">' +
+            '      <button type="button" class="nav-link ' + (isStudy ? 'is-active' : '') + '" data-action="nav-study">' +
+            '        <span class="nav-short">학습</span><span class="nav-full">학습하기</span>' +
+            '      </button>' +
+            '      <button type="button" class="nav-link ' + (isSingle ? 'is-active' : '') + '" data-action="nav-single">' +
+            '        <span class="nav-short">카드관리</span><span class="nav-full">카드 관리</span>' +
+            '      </button>' +
+            '      <button type="button" class="nav-link ' + (isBulk ? 'is-active' : '') + '" data-action="nav-bulk">' +
+            '        <span class="nav-short">일괄등록</span><span class="nav-full">일괄 등록</span>' +
+            '      </button>' +
+            '    </nav>' +
+            '    <button type="button" class="btn btn-primary btn-header-cta" data-action="open-new-deck">' +
+            ICONS.plus +
+            '      <span class="nav-short">새 덱</span><span class="nav-full">새 암기장</span>' +
+            '    </button>' +
+            '  </div>' +
+            '</header>'
+          );
+        }
+
+        function renderSidebar() {
+          var decks = state.decks;
+          var activeId = state.activeDeckId;
+
+          var mobileItems = decks
+            .map(function (d) {
+              var m = d.cards.filter(function (c) { return c.status === 'mastered'; }).length;
+              return (
+                '<button type="button" class="mobile-deck-item ' +
+                (d.id === activeId ? 'is-active' : '') +
+                '" data-action="select-deck" data-deck-id="' + escapeHtml(d.id) + '">' +
+                '<span class="deck-name">' + escapeHtml(d.title) + '</span>' +
+                '<span class="deck-meta tabular-nums">' + d.cards.length + '장 · 완료 ' + m + '</span>' +
+                '</button>'
+              );
+            })
+            .join('');
+
+          var desktopItems = decks
+            .map(function (d) {
+              var total = d.cards.length;
+              var mastered = d.cards.filter(function (c) { return c.status === 'mastered'; }).length;
+              var review = d.cards.filter(function (c) { return c.status === 'review'; }).length;
+              return (
+                '<li class="deck-row">' +
+                '  <button type="button" class="deck-select-btn ' + (d.id === activeId ? 'is-active' : '') + '" data-action="select-deck" data-deck-id="' + escapeHtml(d.id) + '">' +
+                '    <span class="deck-name">' + escapeHtml(d.title) + '</span>' +
+                '    <span class="deck-meta tabular-nums">' +
+                '      <span>' + escapeHtml(d.category || '일반') + '</span>' +
+                '      <span aria-hidden="true">·</span>' +
+                '      <span>' + total + '장</span>' +
+                '      <span aria-hidden="true">·</span>' +
+                '      <span class="' + (mastered === total && total > 0 ? 'status-mastered' : '') + '">완료 ' + mastered + '</span>' +
+                (review > 0 ? '<span aria-hidden="true">·</span><span class="status-review">복습 ' + review + '</span>' : '') +
+                '    </span>' +
+                '  </button>' +
+                '  <div class="deck-row-actions">' +
+                '    <button type="button" class="icon-btn" title="암기장 수정" aria-label="' + escapeHtml(d.title) + ' 이름 수정" data-action="rename-deck" data-deck-id="' + escapeHtml(d.id) + '">' + ICONS.pencil + '</button>' +
+                (decks.length > 1
+                  ? '<button type="button" class="icon-btn danger" title="암기장 삭제" aria-label="' + escapeHtml(d.title) + ' 삭제" data-action="delete-deck" data-deck-id="' + escapeHtml(d.id) + '">' + ICONS.trash + '</button>'
+                  : '') +
+                '  </div>' +
+                '</li>'
+              );
+            })
+            .join('');
+
+          return (
+            '<aside class="sidebar" aria-label="암기장 목록">' +
+            '  <div class="mobile-decks-wrap">' +
+            '    <div class="mobile-decks-header">' +
+            '      <span style="font-size:12px;font-weight:700;color:#64748b;">내 암기장 (' + decks.length + ')</span>' +
+            '      <div style="display:flex;align-items:center;gap:10px;">' +
+            '        <button type="button" class="text-link-btn" style="color:#4f46e5;" data-action="open-transfer" data-tab="export">' + ICONS.download + '<span>내보내기·복사</span></button>' +
+            '        <button type="button" class="text-link-btn" style="color:#4f46e5;" data-action="open-transfer" data-tab="import">' + ICONS.upload + '<span>불러오기</span></button>' +
+            '        <button type="button" class="text-link-btn" data-action="open-restore-samples">' + ICONS.rotateCcw + '<span>샘플 복원</span></button>' +
+            '      </div>' +
+            '    </div>' +
+            '    <div class="mobile-decks-scroll">' + mobileItems + '</div>' +
+            '  </div>' +
+            '  <div class="desktop-decks-card">' +
+            '    <div class="sidebar-header">' +
+            '      <div class="sidebar-title-group">' +
+            '        <span style="color:#4f46e5;display:inline-flex;">' + ICONS.book + '</span>' +
+            '        <span>내 암기장</span>' +
+            '        <span class="tabular-nums" style="font-size:12px;color:#94a3b8;font-weight:500;">' + decks.length + '</span>' +
+            '      </div>' +
+            '      <button type="button" class="text-link-btn" style="color:#4f46e5;font-weight:600;" data-action="open-new-deck">' + ICONS.plus + '<span>추가</span></button>' +
+            '    </div>' +
+            '    <ul class="deck-list">' + desktopItems + '</ul>' +
+            '    <div class="sidebar-footer">' +
+            '      <div class="sidebar-transfer-grid">' +
+            '        <button type="button" class="btn btn-outline" style="padding:8px 10px;font-size:12px;" data-action="open-transfer" data-tab="export">' + ICONS.download + '<span>내보내기·복사</span></button>' +
+            '        <button type="button" class="btn btn-outline" style="padding:8px 10px;font-size:12px;" data-action="open-transfer" data-tab="import">' + ICONS.upload + '<span>불러오기</span></button>' +
+            '      </div>' +
+            '      <button type="button" class="text-link-btn" data-action="open-restore-samples">' + ICONS.rotateCcw + '<span>기본 샘플 암기장 다시 불러오기</span></button>' +
+            '    </div>' +
+            '  </div>' +
+            '</aside>'
+          );
+        }
+
+        function renderStudyStage(deck) {
+          var total = deck.cards.length;
+          if (total === 0) {
+            return (
+              '<section class="stage-col">' +
+              '  <div class="center-box">' +
+              '    <div class="center-icon-badge">' + ICONS.layers + '</div>' +
+              '    <h2 style="margin:16px 0 0;font-size:20px;font-weight:700;">아직 등록된 카드가 없습니다</h2>' +
+              '    <p style="margin:8px auto 0;max-width:400px;font-size:14px;color:#475569;line-height:1.6;">“' +
+              escapeHtml(deck.title) +
+              '” 암기장에 질문을 앞면에, 정답을 뒷면에 입력해 첫 번째 플래시카드를 만들어 보세요.</p>' +
+              '    <div style="margin-top:24px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">' +
+              '      <button type="button" class="btn btn-primary" data-action="nav-single">카드 직접 추가하기</button>' +
+              '      <button type="button" class="btn btn-soft-indigo" data-action="nav-bulk">여러 줄 일괄 등록</button>' +
+              '    </div>' +
+              '  </div>' +
+              '</section>'
+            );
+          }
+
+          var masteredCount = deck.cards.filter(function (c) { return c.status === 'mastered'; }).length;
+          var reviewCount = deck.cards.filter(function (c) { return c.status === 'review'; }).length;
+          var percent = Math.round((masteredCount / total) * 100);
+
+          var queueCards = state.studyQueueIds
+            .map(function (id) { return deck.cards.find(function (c) { return c.id === id; }); })
+            .filter(Boolean);
+          var currentCard = queueCards[state.currentIndex];
+
+          var modeLabel =
+            state.studyMode === 'review'
+              ? '오답 집중 복습 · 남은 오답 ' + queueCards.length + '장'
+              : '전체 학습 모드';
+
+          var topCardHtml =
+            '<div class="panel-card">' +
+            '  <div class="stage-header-top">' +
+            '    <div>' +
+            '      <div class="kicker-meta">' +
+            '        <span>' + escapeHtml(deck.category || '일반') + '</span>' +
+            '        <span aria-hidden="true">·</span>' +
+            '        <span>' + modeLabel + '</span>' +
+            '      </div>' +
+            '      <h1 class="deck-heading">' + escapeHtml(deck.title) + '</h1>' +
+            '    </div>' +
+            '    <div class="progress-summary tabular-nums">' +
+            '      <span>암기 완료 ' + masteredCount + ' / 전체 ' + total + '</span>' +
+            '      <span class="font-mono-tabular" style="font-size:12px;color:#94a3b8;">(' + percent + '%)</span>' +
+            '    </div>' +
+            '  </div>' +
+            '  <div class="progress-track" role="progressbar" aria-valuenow="' + percent + '" aria-valuemin="0" aria-valuemax="100">' +
+            '    <div class="progress-fill" style="width:' + percent + '%"></div>' +
+            '  </div>' +
+            '  <div class="toolbar-row">' +
+            '    <div class="toolbar-group">' +
+            (state.studyMode === 'review'
+              ? '<button type="button" class="btn btn-soft-indigo" data-action="start-all">' + ICONS.layers + '<span>전체 카드 학습으로 돌아가기</span></button>'
+              : '<button type="button" class="btn ' + (reviewCount > 0 ? 'btn-soft-rose' : 'btn-outline') + '" ' + (reviewCount === 0 ? 'disabled title="다시 복습으로 체크한 카드가 있을 때 사용할 수 있습니다."' : '') + ' data-action="start-review">' + ICONS.rotateCcw + '<span>오답만 다시 학습하기</span><span class="font-mono-tabular">(' + reviewCount + ')</span></button>') +
+            '    </div>' +
+            '    <div class="toolbar-group">' +
+            '      <button type="button" class="btn btn-outline" ' + (queueCards.length < 2 ? 'disabled' : '') + ' data-action="shuffle-queue">' + ICONS.shuffle + '<span>카드 순서 섞기</span></button>' +
+            '      <button type="button" class="btn btn-outline" data-action="open-reset-progress">' + ICONS.rotateCcw + '<span>전체 초기화</span></button>' +
+            '    </div>' +
+            '  </div>' +
+            '</div>';
+
+          var stageBodyHtml = '';
+          if (state.sessionCompleted || !currentCard) {
+            if (state.studyMode === 'review' && reviewCount === 0) {
+              stageBodyHtml =
+                '<div class="center-box is-celebrate">' +
+                '  <div class="center-icon-badge is-emerald">' + ICONS.trophy + '</div>' +
+                '  <h2 style="margin:16px 0 0;font-size:26px;font-weight:700;">오답 복습 완료!</h2>' +
+                '  <p style="margin:10px auto 0;max-width:420px;font-size:15px;color:#475569;line-height:1.6;">' +
+                '    오답 목록에 있던 모든 카드를 맞혀 오답을 전부 비웠습니다. 현재 <strong class="status-mastered tabular-nums">' +
+                masteredCount + ' / ' + total + '장</strong>을 암기 완료했습니다.' +
+                '  </p>' +
+                '  <div style="margin-top:26px;display:flex;justify-content:center;">' +
+                '    <button type="button" class="btn btn-primary" style="padding:12px 22px;" data-action="start-all">' + ICONS.layers + '<span>전체 카드로 돌아가기</span></button>' +
+                '  </div>' +
+                '</div>';
+            } else {
+              stageBodyHtml =
+                '<div class="center-box">' +
+                '  <div class="center-icon-badge is-emerald">' + ICONS.checkCircle + '</div>' +
+                '  <h2 style="margin:16px 0 0;font-size:22px;font-weight:700;">' +
+                (state.studyMode === 'review' ? '오답 복습 라운드를 마쳤습니다' : '이번 학습 세션을 완료했습니다') +
+                '  </h2>' +
+                '  <p style="margin:10px auto 0;max-width:420px;font-size:14px;color:#475569;line-height:1.6;">' +
+                '    현재 암기장 기준 <strong class="status-mastered tabular-nums">암기 완료 ' + masteredCount + '장</strong>' +
+                (reviewCount > 0 ? ', <strong class="status-review tabular-nums">다시 복습 ' + reviewCount + '장</strong>이 남아 있습니다.' : '으로 모든 카드를 완벽하게 외웠습니다.') +
+                '  </p>' +
+                '  <div style="margin-top:26px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">' +
+                (reviewCount > 0
+                  ? '<button type="button" class="btn btn-danger" style="padding:12px 20px;" data-action="start-review">' + ICONS.rotateCcw + '<span>오답만 다시 학습하기 (' + reviewCount + '장)</span></button>'
+                  : '') +
+                '    <button type="button" class="btn btn-primary" style="padding:12px 20px;" data-action="restart-session">' + ICONS.rotateCw + '<span>처음부터 다시 학습하기</span></button>' +
+                '  </div>' +
+                '</div>';
+            }
+          } else {
+            var sm = statusMeta(currentCard.status);
+            var statusHtml =
+              '<span class="' + sm.cls + '" style="display:inline-flex;align-items:center;gap:4px;">' +
+              sm.icon + '<span>' + sm.text + '</span></span>' +
+              '<span aria-hidden="true" style="color:#cbd5e1;">·</span>' +
+              '<span class="font-mono-tabular" style="font-weight:600;color:#475569;">' + (state.currentIndex + 1) + ' / ' + queueCards.length + '</span>';
+
+            stageBodyHtml =
+              '<div class="flashcard-perspective">' +
+              '  <div class="flashcard-inner ' + (state.isFlipped ? 'is-flipped' : '') + '" id="study-flashcard" role="button" tabindex="0" data-action="flip-card" aria-label="플래시카드 뒤집기">' +
+              '    <div class="flashcard-face flashcard-front">' +
+              '      <div class="card-face-top">' +
+              '        <span style="font-weight:600;color:#4f46e5;">앞면 · 질문 / 단어</span>' +
+              '        <div style="display:flex;align-items:center;gap:10px;">' + statusHtml + '</div>' +
+              '      </div>' +
+              '      <div class="card-face-body">' +
+              '        <p class="card-front-text">' + escapeHtml(currentCard.front) + '</p>' +
+              '      </div>' +
+              '      <div class="card-face-bottom">' +
+              '        <span class="hint-text">카드를 클릭하거나 Space 키를 누르세요</span>' +
+              '        <button type="button" class="btn btn-soft-indigo" style="padding:8px 14px;font-size:13px;" data-action="flip-card">' + ICONS.rotateCw + '<span>정답 확인</span></button>' +
+              '      </div>' +
+              '    </div>' +
+              '    <div class="flashcard-face flashcard-back">' +
+              '      <div class="card-face-top">' +
+              '        <span style="font-weight:600;color:#4338ca;">뒷면 · 정답 / 뜻</span>' +
+              '        <div style="display:flex;align-items:center;gap:10px;">' + statusHtml + '</div>' +
+              '      </div>' +
+              '      <div class="card-face-body">' +
+              '        <p class="card-back-sub">' + escapeHtml(currentCard.front) + '</p>' +
+              '        <p class="card-back-text">' + escapeHtml(currentCard.back) + '</p>' +
+              '      </div>' +
+              '      <div class="card-face-bottom">' +
+              '        <span class="hint-text">아래 버튼으로 암기 여부를 기록하세요</span>' +
+              '        <button type="button" class="btn btn-outline" style="padding:8px 14px;font-size:13px;border-color:#c7d2fe;color:#4338ca;" data-action="flip-card">' + ICONS.rotateCw + '<span>앞면으로 돌리기</span></button>' +
+              '      </div>' +
+              '    </div>' +
+              '  </div>' +
+              '</div>' +
+              '<div class="grade-grid">' +
+              '  <button type="button" class="grade-btn grade-btn-review" data-action="grade-card" data-status="review" data-card-id="' + escapeHtml(currentCard.id) + '">' + ICONS.xCircle + '<span>다시 복습 (X)</span></button>' +
+              '  <button type="button" class="grade-btn grade-btn-mastered" data-action="grade-card" data-status="mastered" data-card-id="' + escapeHtml(currentCard.id) + '">' + ICONS.checkCircle + '<span>암기 완료 (O)</span></button>' +
+              '</div>' +
+              '<div class="nav-browse-row">' +
+              '  <button type="button" class="btn btn-outline" style="padding:8px 12px;font-size:13px;" ' + (state.currentIndex === 0 ? 'disabled' : '') + ' data-action="prev-card">' + ICONS.chevLeft + '<span>이전 카드</span></button>' +
+              '  <span class="hint-text nav-full">단축키: Space 뒤집기 · X(←) 다시 복습 · O(→) 암기 완료</span>' +
+              '  <button type="button" class="btn btn-outline" style="padding:8px 12px;font-size:13px;" ' + (state.currentIndex >= queueCards.length - 1 ? 'disabled' : '') + ' data-action="next-card"><span>다음 카드</span>' + ICONS.chevRight + '</button>' +
+              '</div>';
+          }
+
+          return '<section class="stage-col" aria-label="플래시카드 학습 공간">' + topCardHtml + stageBodyHtml + '</section>';
+        }
+
+        function renderManageStage(deck) {
+          var parsedBulk = parseBulkInput(state.bulkText);
+          var validBulk = parsedBulk.filter(function (p) { return p.valid; });
+          var invalidBulk = parsedBulk.filter(function (p) { return !p.valid; });
+
+          var filteredCards = deck.cards.filter(function (c) {
+            if (state.statusFilter !== 'all' && c.status !== state.statusFilter) return false;
+            if (state.searchQuery.trim()) {
+              var q = state.searchQuery.trim().toLowerCase();
+              return c.front.toLowerCase().indexOf(q) !== -1 || c.back.toLowerCase().indexOf(q) !== -1;
+            }
+            return true;
+          });
+
+          var formContent = '';
+          if (state.manageTab === 'single') {
+            formContent =
+              '<form id="single-card-form" style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9;">' +
+              '  <div class="form-grid-2">' +
+              '    <div>' +
+              '      <label for="single-front" class="field-label">앞면 (질문 / 단어)</label>' +
+              '      <textarea id="single-front" rows="3" class="textarea-box" placeholder="예: ubiquitous 또는 광합성의 정의는?">' + escapeHtml(state.singleFront) + '</textarea>' +
+              '    </div>' +
+              '    <div>' +
+              '      <label for="single-back" class="field-label">뒷면 (정답 / 뜻)</label>' +
+              '      <textarea id="single-back" rows="3" class="textarea-box" placeholder="예: 어디에나 존재하는">' + escapeHtml(state.singleBack) + '</textarea>' +
+              '    </div>' +
+              '  </div>' +
+              (state.singleError ? '<p class="error-text">' + escapeHtml(state.singleError) + '</p>' : '') +
+              '  <div style="margin-top:14px;display:flex;justify-content:flex-end;">' +
+              '    <button type="submit" class="btn btn-primary">' + ICONS.plus + '<span>카드 추가하기</span></button>' +
+              '  </div>' +
+              '</form>';
+          } else {
+            var bulkPreviewHtml = '';
+            if (parsedBulk.length > 0) {
+              bulkPreviewHtml =
+                '<div class="preview-box" style="margin-top:14px;">' +
+                '  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;">' +
+                '    <div style="display:flex;align-items:center;gap:12px;" class="tabular-nums">' +
+                '      <span style="font-weight:700;color:#4338ca;">인식된 카드 ' + validBulk.length + '장</span>' +
+                (invalidBulk.length > 0 ? '<span class="status-review">형식 확인 필요 ' + invalidBulk.length + '줄</span>' : '') +
+                '    </div>' +
+                '    <span style="font-size:12px;color:#64748b;">콜론(:), 탭(Tab), 하이픈( - ) 구분 지원</span>' +
+                '  </div>' +
+                (invalidBulk.length > 0
+                  ? '<ul style="margin:10px 0 0;padding-left:18px;font-size:12px;color:#be123c;">' +
+                    invalidBulk.slice(0, 4).map(function (it) {
+                      return '<li><strong class="font-mono-tabular">' + it.lineNumber + '번째 줄:</strong> ' + escapeHtml(it.error) + ' (' + escapeHtml(it.raw) + ')</li>';
+                    }).join('') +
+                    '</ul>'
+                  : '') +
+                (validBulk.length > 0
+                  ? '<div class="preview-scroll">' +
+                    validBulk.map(function (it) {
+                      return (
+                        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:6px 0;border-bottom:1px solid #f1f5f9;font-size:12px;">' +
+                        '<span style="font-weight:600;color:#0f172a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(it.front) + '</span>' +
+                        '<span style="color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtml(it.back) + '</span>' +
+                        '</div>'
+                      );
+                    }).join('') +
+                    '</div>'
+                  : '') +
+                '</div>';
+            }
+
+            formContent =
+              '<div style="margin-top:20px;padding-top:20px;border-top:1px solid #f1f5f9;">' +
+              '  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin-bottom:12px;">' +
+              '    <p style="margin:0;font-size:13px;color:#475569;">한 줄에 한 장씩 <code class="inline-code">단어 : 뜻</code> 형식으로 붙여넣으면 자동으로 여러 장의 카드가 생성됩니다.</p>' +
+              '    <button type="button" class="btn btn-outline" style="padding:6px 10px;font-size:12px;" data-action="fill-bulk-example">' + ICONS.fileText + '<span>예시 문구 채우기</span></button>' +
+              '  </div>' +
+              '  <textarea id="bulk-textarea" rows="7" class="textarea-box" placeholder="예시:\nresilient : 회복력이 있는\n대동법 : 공물을 쌀·베·동전으로 통일해 납부하게 한 세법">' + escapeHtml(state.bulkText) + '</textarea>' +
+              bulkPreviewHtml +
+              '  <div style="margin-top:14px;display:flex;justify-content:flex-end;gap:8px;">' +
+              (state.bulkText.trim() ? '<button type="button" class="btn btn-outline" data-action="clear-bulk">입력 지우기</button>' : '') +
+              '    <button type="button" id="bulk-submit-btn" class="btn btn-primary" ' + (validBulk.length === 0 ? 'disabled' : '') + ' data-action="submit-bulk">' + ICONS.plus + '<span>' + (validBulk.length > 0 ? validBulk.length + '장 한 번에 추가하기' : '카드 한 번에 추가하기') + '</span></button>' +
+              '  </div>' +
+              '</div>';
+          }
+
+          var listHtml = '';
+          if (filteredCards.length === 0) {
+            listHtml =
+              '<div style="padding:44px 20px;text-align:center;font-size:14px;color:#64748b;">' +
+              (deck.cards.length === 0
+                ? '아직 등록된 카드가 없습니다. 위 입력창에서 첫 카드를 추가해 보세요.'
+                : '조건에 일치하는 카드가 없습니다.') +
+              '</div>';
+          } else {
+            listHtml = filteredCards
+              .map(function (c, idx) {
+                if (state.editingCardId === c.id) {
+                  return (
+                    '<div class="card-list-item">' +
+                    '  <div class="form-grid-2">' +
+                    '    <div><label class="field-label" style="font-size:12px;">앞면</label><textarea id="edit-front-input" rows="2" class="textarea-box">' + escapeHtml(state.editFront) + '</textarea></div>' +
+                    '    <div><label class="field-label" style="font-size:12px;">뒷면</label><textarea id="edit-back-input" rows="2" class="textarea-box">' + escapeHtml(state.editBack) + '</textarea></div>' +
+                    '  </div>' +
+                    '  <div style="margin-top:10px;display:flex;justify-content:flex-end;gap:8px;">' +
+                    '    <button type="button" class="btn btn-outline" style="padding:6px 12px;font-size:12px;" data-action="cancel-edit-card">취소</button>' +
+                    '    <button type="button" class="btn btn-primary" style="padding:6px 12px;font-size:12px;" data-action="save-edit-card" data-card-id="' + escapeHtml(c.id) + '">' + ICONS.check + '<span>저장</span></button>' +
+                    '  </div>' +
+                    '</div>'
+                  );
+                }
+
+                var sm = statusMeta(c.status);
+                return (
+                  '<div class="card-list-item">' +
+                  '  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-start;gap:14px;">' +
+                  '    <div class="form-grid-2" style="flex:1;min-width:220px;">' +
+                  '      <div>' +
+                  '        <div style="font-size:11px;color:#94a3b8;" class="font-mono-tabular">' + String(idx + 1).padStart(2, '0') + ' · 앞면</div>' +
+                  '        <div style="margin-top:3px;font-size:14px;font-weight:600;color:#0f172a;white-space:pre-line;">' + escapeHtml(c.front) + '</div>' +
+                  '      </div>' +
+                  '      <div>' +
+                  '        <div style="font-size:11px;color:#94a3b8;">뒷면</div>' +
+                  '        <div style="margin-top:3px;font-size:14px;color:#334155;white-space:pre-line;line-height:1.5;">' + escapeHtml(c.back) + '</div>' +
+                  '      </div>' +
+                  '    </div>' +
+                  '    <div style="display:flex;align-items:center;gap:12px;flex-shrink:0;">' +
+                  '      <span class="' + sm.cls + '" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;">' + sm.icon + '<span>' + sm.text + '</span></span>' +
+                  '      <div style="display:flex;align-items:center;gap:2px;">' +
+                  '        <button type="button" class="icon-btn" title="카드 수정" aria-label="카드 수정" data-action="start-edit-card" data-card-id="' + escapeHtml(c.id) + '">' + ICONS.pencil + '</button>' +
+                  '        <button type="button" class="icon-btn danger" title="카드 삭제" aria-label="카드 삭제" data-action="delete-card" data-card-id="' + escapeHtml(c.id) + '">' + ICONS.trash + '</button>' +
+                  '      </div>' +
+                  '    </div>' +
+                  '  </div>' +
+                  '</div>'
+                );
+              })
+              .join('');
+          }
+
+          return (
+            '<section class="stage-col" aria-label="카드 추가 및 관리">' +
+            '  <div class="panel-card">' +
+            '    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;">' +
+            '      <div>' +
+            '        <div class="kicker-meta"><span>' + escapeHtml(deck.title) + '</span><span aria-hidden="true">·</span><span class="tabular-nums">총 ' + deck.cards.length + '장</span></div>' +
+            '        <h1 class="deck-heading" style="font-size:20px;">카드 추가 및 편집</h1>' +
+            '      </div>' +
+            '      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">' +
+            '        <div class="segmented" role="tablist">' +
+            '          <button type="button" role="tab" class="seg-btn ' + (state.manageTab === 'single' ? 'is-active' : '') + '" data-action="nav-single">개별 추가</button>' +
+            '          <button type="button" role="tab" class="seg-btn ' + (state.manageTab === 'bulk' ? 'is-active' : '') + '" data-action="nav-bulk">빠른 일괄 등록</button>' +
+            '        </div>' +
+            '        <button type="button" class="btn btn-outline nav-full" style="padding:8px 12px;font-size:13px;" data-action="open-transfer" data-tab="export">' + ICONS.download + '<span>내보내기·복사</span></button>' +
+            (deck.cards.length > 0 ? '<button type="button" class="btn btn-soft-indigo nav-full" style="padding:8px 12px;font-size:13px;" data-action="nav-study">바로 학습하기</button>' : '') +
+            '      </div>' +
+            '    </div>' +
+            formContent +
+            '  </div>' +
+            '  <div class="card-list-wrap">' +
+            '    <div class="card-list-header">' +
+            '      <h2 style="margin:0;font-size:16px;font-weight:700;">등록된 카드 목록 <span class="tabular-nums" style="color:#94a3b8;font-weight:500;font-size:14px;">' + filteredCards.length + '</span></h2>' +
+            '      <div style="display:flex;flex-wrap:wrap;align-items:center;gap:8px;">' +
+            '        <div class="search-wrap">' + ICONS.search + '<input type="search" id="card-search-input" class="input-box search-input" style="padding-top:7px;padding-bottom:7px;width:185px;" placeholder="질문 또는 정답 검색" value="' + escapeHtml(state.searchQuery) + '" /></div>' +
+            '        <div class="segmented">' +
+            ['all:전체', 'mastered:완료', 'review:복습', 'unstudied:학습 전']
+              .map(function (pair) {
+                var p = pair.split(':');
+                return '<button type="button" class="seg-btn ' + (state.statusFilter === p[0] ? 'is-active' : '') + '" style="padding:5px 10px;font-size:12px;" data-action="filter-status" data-status="' + p[0] + '">' + p[1] + '</button>';
+              })
+              .join('') +
+            '        </div>' +
+            '      </div>' +
+            '    </div>' +
+            listHtml +
+            '  </div>' +
+            '</section>'
+          );
+        }
+
+        function renderModals() {
+          var modalRoot = document.getElementById('modal-root');
+          if (!modalRoot) return;
+          var activeDeck = getActiveDeck();
+
+          if (state.deckModal.open) {
+            var isCreate = state.deckModal.mode === 'create';
+            modalRoot.innerHTML =
+              '<div class="modal-backdrop" data-action="close-modals">' +
+              '  <div class="modal-panel" role="dialog" aria-modal="true" onclick="event.stopPropagation()">' +
+              '    <div class="modal-head">' +
+              '      <h3 style="margin:0;font-size:18px;font-weight:700;">' + (isCreate ? '새 암기장 만들기' : '암기장 정보 수정') + '</h3>' +
+              '      <button type="button" class="icon-btn" aria-label="닫기" data-action="close-modals">' + ICONS.close + '</button>' +
+              '    </div>' +
+              '    <form id="deck-modal-form" class="modal-body">' +
+              '      <div>' +
+              '        <label for="deck-title-field" class="field-label">암기장 이름 <span style="color:#e11d48;">*</span></label>' +
+              '        <input id="deck-title-field" type="text" maxlength="40" class="input-box" placeholder="예: 토익 필수 숙어, 정보처리기사 요약" value="' + escapeHtml(state.deckModal.title) + '" />' +
+              (state.deckModal.error ? '<p class="error-text">' + escapeHtml(state.deckModal.error) + '</p>' : '') +
+              '      </div>' +
+              '      <div style="margin-top:14px;">' +
+              '        <label for="deck-category-field" class="field-label">과목 / 주제 (선택)</label>' +
+              '        <input id="deck-category-field" type="text" maxlength="24" class="input-box" placeholder="예: 영어, 자격증, 전공 과목" value="' + escapeHtml(state.deckModal.category) + '" />' +
+              '      </div>' +
+              '      <div class="modal-foot">' +
+              '        <button type="button" class="btn btn-outline" data-action="close-modals">취소</button>' +
+              '        <button type="submit" class="btn btn-primary">' + (isCreate ? '만들기' : '저장하기') + '</button>' +
+              '      </div>' +
+              '    </form>' +
+              '  </div>' +
+              '</div>';
+            var titleEl = document.getElementById('deck-title-field');
+            if (titleEl) titleEl.focus();
+            return;
+          }
+
+          if (state.confirmModal.open) {
+            var type = state.confirmModal.type;
+            var targetDeck = state.decks.find(function (d) { return d.id === state.confirmModal.deckId; });
+            var title = '';
+            var desc = '';
+            var confirmBtn = '';
+            var secondaryBtn = '';
+
+            if (type === 'delete-deck' && targetDeck) {
+              title = '암기장을 삭제할까요?';
+              desc = '“' + targetDeck.title + '” 암기장과 포함된 ' + targetDeck.cards.length + '장의 카드가 모두 삭제됩니다. 이 작업은 되돌릴 수 없습니다.';
+              confirmBtn = '<button type="button" class="btn btn-danger" data-action="confirm-delete-deck">삭제하기</button>';
+            } else if (type === 'reset-progress' && activeDeck) {
+              title = '학습 상태를 초기화할까요?';
+              desc = '“' + activeDeck.title + '” 암기장의 ‘암기 완료’ 및 ‘다시 복습’ 표시를 모두 초기화하고 첫 번째 카드부터 다시 시작합니다.\n\n(기본 샘플 암기장까지 완전히 처음 상태로 되돌리려면 ‘전체 기본값 복원’을 선택하세요.)';
+              secondaryBtn = '<button type="button" class="btn btn-soft-indigo" data-action="confirm-factory-reset">전체 기본값 복원</button>';
+              confirmBtn = '<button type="button" class="btn btn-primary" data-action="confirm-reset-progress">현재 암기장 기록 초기화</button>';
+            } else if (type === 'restore-samples') {
+              title = '기본 샘플 암기장을 불러올까요?';
+              desc = '‘기초 영단어’, ‘한국사 핵심 개념’, ‘과학 필수 용어’ 기본 샘플 암기장을 초기 상태로 다시 불러옵니다. 직접 만든 개인 암기장은 그대로 유지됩니다.';
+              confirmBtn = '<button type="button" class="btn btn-primary" data-action="confirm-restore-samples">샘플 불러오기</button>';
+            }
+
+            modalRoot.innerHTML =
+              '<div class="modal-backdrop" data-action="close-modals">' +
+              '  <div class="modal-panel" role="dialog" aria-modal="true" onclick="event.stopPropagation()">' +
+              '    <div class="modal-head">' +
+              '      <div style="display:flex;align-items:center;gap:10px;">' +
+              '        <div class="center-icon-badge" style="width:38px;height:38px;border-radius:10px;' + (type === 'delete-deck' ? 'background:#fff1f2;color:#e11d48;' : '') + '">' + ICONS.alert + '</div>' +
+              '        <h3 style="margin:0;font-size:16px;font-weight:700;">' + escapeHtml(title) + '</h3>' +
+              '      </div>' +
+              '      <button type="button" class="icon-btn" aria-label="닫기" data-action="close-modals">' + ICONS.close + '</button>' +
+              '    </div>' +
+              '    <div class="modal-body">' +
+              '      <p style="margin:0;font-size:14px;color:#475569;line-height:1.6;white-space:pre-line;">' + escapeHtml(desc) + '</p>' +
+              '      <div class="modal-foot">' +
+              '        <button type="button" class="btn btn-outline" data-action="close-modals">취소</button>' +
+              secondaryBtn +
+              confirmBtn +
+              '      </div>' +
+              '    </div>' +
+              '  </div>' +
+              '</div>';
+            return;
+          }
+
+          if (state.transferModal.open && activeDeck) {
+            var tTab = state.transferModal.tab;
+            var textExp = exportDeckToText(activeDeck);
+            var parsedImp = state.transferModal.importRaw.trim()
+              ? parseImportedDeckContent(state.transferModal.importRaw, state.transferModal.filenameTitle || '불러온 암기장')
+              : null;
+
+            var bodyHtml = '';
+            if (tTab === 'export') {
+              if (activeDeck.cards.length === 0) {
+                bodyHtml = '<div class="preview-box" style="text-align:center;padding:24px;font-size:14px;color:#64748b;">현재 암기장에 카드가 없어 내보낼 내용이 없습니다. 카드를 먼저 추가해 주세요.</div>';
+              } else {
+                bodyHtml =
+                  '<div style="display:flex;flex-direction:column;gap:16px;">' +
+                  '  <div class="preview-box" style="background:#ffffff;">' +
+                  '    <h4 style="margin:0;font-size:14px;font-weight:700;">1. 텍스트 형식 (단어 : 뜻)</h4>' +
+                  '    <p style="margin:4px 0 10px;font-size:12px;color:#64748b;">메모장, 노션, 카카오톡 등에 붙여넣거나 나중에 다시 불러올 수 있습니다.</p>' +
+                  '    <pre class="export-preview">' + escapeHtml(textExp) + '</pre>' +
+                  '    <div style="margin-top:12px;display:flex;flex-wrap:wrap;gap:8px;">' +
+                  '      <button type="button" class="btn btn-primary" data-action="copy-export" data-kind="text">' + (state.transferModal.copiedKey === 'text' ? ICONS.check + '<span>복사 완료</span>' : ICONS.copy + '<span>텍스트 복사하기</span>') + '</button>' +
+                  '      <button type="button" class="btn btn-outline" data-action="download-export" data-kind="text">' + ICONS.download + '<span>.txt 파일로 내보내기</span></button>' +
+                  '    </div>' +
+                  '  </div>' +
+                  '  <div class="preview-box" style="background:#ffffff;">' +
+                  '    <h4 style="margin:0;font-size:14px;font-weight:700;">2. 전체 백업 형식 (JSON)</h4>' +
+                  '    <p style="margin:4px 0 12px;font-size:12px;color:#64748b;">암기장 이름, 과목 분류, 암기 완료/복습 상태까지 그대로 보관하는 백업 형식입니다.</p>' +
+                  '    <div style="display:flex;flex-wrap:wrap;gap:8px;">' +
+                  '      <button type="button" class="btn btn-soft-indigo" data-action="copy-export" data-kind="json">' + (state.transferModal.copiedKey === 'json' ? ICONS.check + '<span>JSON 복사 완료</span>' : ICONS.copy + '<span>JSON 복사하기</span>') + '</button>' +
+                  '      <button type="button" class="btn btn-outline" data-action="download-export" data-kind="json">' + ICONS.download + '<span>.json 백업 파일 저장</span></button>' +
+                  '    </div>' +
+                  '  </div>' +
+                  '</div>';
+              }
+            } else {
+              var previewPart = '';
+              if (parsedImp && !parsedImp.ok) {
+                previewPart = '<div style="margin-top:12px;padding:10px 14px;border-radius:12px;border:1px solid #fecdd3;background:#fff1f2;color:#be123c;font-size:13px;">' + escapeHtml(parsedImp.error) + '</div>';
+              } else if (parsedImp && parsedImp.ok) {
+                previewPart =
+                  '<div class="preview-box" style="margin-top:14px;border-color:#e0e7ff;">' +
+                  '  <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px;">' +
+                  '    <span style="font-weight:700;color:#4338ca;" class="tabular-nums">인식된 카드 ' + parsedImp.cards.length + '장 (' + (parsedImp.sourceType === 'json' ? 'JSON 백업' : '텍스트 형식') + ')</span>' +
+                  (parsedImp.skippedCount > 0 ? '<span style="font-size:12px;color:#64748b;">제외 ' + parsedImp.skippedCount + '개</span>' : '') +
+                  '  </div>' +
+                  '  <div class="form-grid-2" style="margin-top:12px;">' +
+                  '    <div><label for="imp-title" class="field-label" style="font-size:12px;">새 암기장 이름</label><input id="imp-title" type="text" class="input-box" style="padding:8px 12px;font-size:13px;" value="' + escapeHtml(state.transferModal.importTitle) + '" /></div>' +
+                  '    <div><label for="imp-cat" class="field-label" style="font-size:12px;">과목 / 주제</label><input id="imp-cat" type="text" class="input-box" style="padding:8px 12px;font-size:13px;" value="' + escapeHtml(state.transferModal.importCategory) + '" /></div>' +
+                  '  </div>' +
+                  '  <div style="margin-top:14px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;">' +
+                  '    <button type="button" class="btn btn-soft-indigo" data-action="import-into-current">' + ICONS.plus + '<span>현재 암기장에 추가</span></button>' +
+                  '    <button type="button" class="btn btn-primary" data-action="import-as-new">' + ICONS.plus + '<span>새 암기장으로 불러오기</span></button>' +
+                  '  </div>' +
+                  '</div>';
+              }
+
+              bodyHtml =
+                '<div>' +
+                '  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;border:1px dashed #a5b4fc;background:rgba(238,242,255,0.45);border-radius:12px;padding:14px;">' +
+                '    <div>' +
+                '      <div style="font-size:14px;font-weight:600;color:#0f172a;">저장해 둔 파일 불러오기</div>' +
+                '      <div style="font-size:12px;color:#64748b;">내보내기한 .json 또는 .txt 파일을 선택하세요.</div>' +
+                '    </div>' +
+                '    <input type="file" id="import-file-input" accept=".json,.txt,application/json,text/plain" style="display:none;" />' +
+                '    <button type="button" class="btn btn-soft-indigo" data-action="trigger-import-file">' + ICONS.upload + '<span>파일 선택하기</span></button>' +
+                '  </div>' +
+                '  <div style="margin-top:14px;">' +
+                '    <label for="import-raw-textarea" class="field-label">또는 복사한 내용 붙여넣기</label>' +
+                '    <textarea id="import-raw-textarea" rows="5" class="textarea-box" placeholder="복사해 둔 JSON 데이터 또는 &quot;단어 : 뜻&quot; 형식의 텍스트를 여기에 붙여넣으세요.">' + escapeHtml(state.transferModal.importRaw) + '</textarea>' +
+                '  </div>' +
+                previewPart +
+                '</div>';
+            }
+
+            modalRoot.innerHTML =
+              '<div class="modal-backdrop" data-action="close-modals">' +
+              '  <div class="modal-panel is-wide" role="dialog" aria-modal="true" onclick="event.stopPropagation()">' +
+              '    <div class="modal-head">' +
+              '      <div>' +
+              '        <h3 style="margin:0;font-size:18px;font-weight:700;">단어장 내보내기 · 복사 · 불러오기</h3>' +
+              '        <p style="margin:3px 0 0;font-size:12px;color:#64748b;">현재 암기장: <strong>' + escapeHtml(activeDeck.title) + '</strong> (' + activeDeck.cards.length + '장)</p>' +
+              '      </div>' +
+              '      <button type="button" class="icon-btn" aria-label="닫기" data-action="close-modals">' + ICONS.close + '</button>' +
+              '    </div>' +
+              '    <div style="padding:10px 22px;border-bottom:1px solid #f1f5f9;background:#f8fafc;">' +
+              '      <div class="segmented">' +
+              '        <button type="button" class="seg-btn ' + (tTab === 'export' ? 'is-active' : '') + '" data-action="switch-transfer-tab" data-tab="export">내보내기 / 복사하기</button>' +
+              '        <button type="button" class="seg-btn ' + (tTab === 'import' ? 'is-active' : '') + '" data-action="switch-transfer-tab" data-tab="import">불러오기</button>' +
+              '      </div>' +
+              '    </div>' +
+              '    <div class="modal-body">' + bodyHtml + '</div>' +
+              '  </div>' +
+              '</div>';
+            return;
+          }
+
+          modalRoot.innerHTML = '';
+        }
+
+        function renderToast() {
+          var toastRoot = document.getElementById('toast-root');
+          if (!toastRoot) return;
+          if (!state.toast) {
+            toastRoot.innerHTML = '';
+            return;
+          }
+          toastRoot.innerHTML =
+            '<div class="toast-banner" role="status" aria-live="polite">' +
+            '  <span style="color:#a5b4fc;display:inline-flex;">' + ICONS.checkCircleSm + '</span>' +
+            '  <span>' + escapeHtml(state.toast) + '</span>' +
+            '</div>';
+        }
+
+        function renderApp() {
+          var appEl = document.getElementById('app');
+          var activeDeck = getActiveDeck();
+          if (!appEl || !activeDeck) return;
+
+          appEl.innerHTML =
+            '<div class="app-shell">' +
+            renderHeader() +
+            '  <main class="main-container">' +
+            '    <div class="workspace-grid">' +
+            renderSidebar() +
+            (state.activeView === 'study' ? renderStudyStage(activeDeck) : renderManageStage(activeDeck)) +
+            '    </div>' +
+            '  </main>' +
+            '  <footer class="app-footer">' +
+            '    <div class="footer-inner">' +
+            '      <span>스마트 암기장 · 단일 HTML 무설치 버전 (브라우저 자동 저장)</span>' +
+            '      <div class="footer-actions">' +
+            '        <button type="button" class="text-link-btn" style="color:#4f46e5;font-weight:600;" data-action="download-single-html">' + ICONS.download + '<span>index.html 단일 파일 저장</span></button>' +
+            '        <button type="button" class="text-link-btn" style="color:#4f46e5;font-weight:600;" data-action="download-github-zip">' + ICONS.download + '<span>GitHub·Vercel 배포용 (.zip) 다운로드</span></button>' +
+            '      </div>' +
+            '    </div>' +
+            '  </footer>' +
+            '</div>';
+
+          renderModals();
+          renderToast();
+        }
+
+        // Event Delegation
+        document.addEventListener('click', function (e) {
+          var target = e.target.closest('[data-action]');
+          if (!target) return;
+          var action = target.getAttribute('data-action');
+          var activeDeck = getActiveDeck();
+
+          if (action === 'nav-study') {
+            state.activeView = 'study';
+            renderApp();
+          } else if (action === 'nav-single') {
+            state.activeView = 'manage';
+            state.manageTab = 'single';
+            renderApp();
+          } else if (action === 'nav-bulk') {
+            state.activeView = 'manage';
+            state.manageTab = 'bulk';
+            renderApp();
+          } else if (action === 'select-deck') {
+            var did = target.getAttribute('data-deck-id');
+            var found = state.decks.find(function (d) { return d.id === did; });
+            if (found) {
+              state.activeDeckId = found.id;
+              initQueueForDeck(found, 'all');
+              persist();
+              renderApp();
+            }
+          } else if (action === 'flip-card') {
+            e.stopPropagation();
+            state.isFlipped = !state.isFlipped;
+            var cardEl = document.getElementById('study-flashcard');
+            if (cardEl) {
+              cardEl.classList.toggle('is-flipped', state.isFlipped);
+            } else {
+              renderApp();
+            }
+          } else if (action === 'grade-card') {
+            var cid = target.getAttribute('data-card-id');
+            var st = target.getAttribute('data-status');
+            gradeCard(cid, st);
+          } else if (action === 'prev-card') {
+            if (state.currentIndex > 0) {
+              state.isFlipped = false;
+              state.currentIndex -= 1;
+              renderApp();
+            }
+          } else if (action === 'next-card') {
+            if (state.currentIndex + 1 < state.studyQueueIds.length) {
+              state.isFlipped = false;
+              state.currentIndex += 1;
+              renderApp();
+            }
+          } else if (action === 'start-review') {
+            startReviewOnly();
+          } else if (action === 'start-all') {
+            if (activeDeck) {
+              initQueueForDeck(activeDeck, 'all');
+              renderApp();
+            }
+          } else if (action === 'shuffle-queue') {
+            if (state.studyQueueIds.length >= 2) {
+              state.studyQueueIds = shuffleArray(state.studyQueueIds);
+              state.currentIndex = 0;
+              state.isFlipped = false;
+              state.sessionCompleted = false;
+              renderApp();
+              showToast('카드 순서를 무작위로 섞었습니다.');
+            }
+          } else if (action === 'restart-session') {
+            if (activeDeck) {
+              if (state.studyMode === 'review') {
+                startReviewOnly();
+              } else {
+                initQueueForDeck(activeDeck, 'all');
+                renderApp();
+              }
+            }
+          } else if (action === 'fill-bulk-example') {
+            state.bulkText = BULK_EXAMPLE;
+            renderApp();
+          } else if (action === 'clear-bulk') {
+            state.bulkText = '';
+            renderApp();
+          } else if (action === 'submit-bulk') {
+            var parsed = parseBulkInput(state.bulkText);
+            var now = Date.now();
+            var newCards = parsed
+              .filter(function (p) { return p.valid; })
+              .map(function (p, i) {
+                return { id: generateId('card'), front: p.front, back: p.back, status: 'unstudied', createdAt: now + i };
+              });
+            if (newCards.length > 0 && activeDeck) {
+              activeDeck.cards = activeDeck.cards.concat(newCards);
+              if (state.studyMode === 'all') {
+                state.studyQueueIds = state.studyQueueIds.concat(newCards.map(function (c) { return c.id; }));
+                state.sessionCompleted = false;
+              }
+              state.bulkText = '';
+              persist();
+              renderApp();
+              showToast(newCards.length + '장의 카드를 한 번에 추가했습니다.');
+            }
+          } else if (action === 'start-edit-card') {
+            var ecid = target.getAttribute('data-card-id');
+            var card = activeDeck && activeDeck.cards.find(function (c) { return c.id === ecid; });
+            if (card) {
+              state.editingCardId = card.id;
+              state.editFront = card.front;
+              state.editBack = card.back;
+              renderApp();
+            }
+          } else if (action === 'cancel-edit-card') {
+            state.editingCardId = null;
+            renderApp();
+          } else if (action === 'save-edit-card') {
+            var scid = target.getAttribute('data-card-id');
+            var f = state.editFront.trim();
+            var b = state.editBack.trim();
+            if (f && b && activeDeck) {
+              activeDeck.cards.forEach(function (c) {
+                if (c.id === scid) {
+                  c.front = f;
+                  c.back = b;
+                }
+              });
+              state.editingCardId = null;
+              persist();
+              renderApp();
+              showToast('카드를 수정했습니다.');
+            }
+          } else if (action === 'delete-card') {
+            var dcid = target.getAttribute('data-card-id');
+            if (activeDeck) {
+              activeDeck.cards = activeDeck.cards.filter(function (c) { return c.id !== dcid; });
+              state.studyQueueIds = state.studyQueueIds.filter(function (id) { return id !== dcid; });
+              if (state.currentIndex >= state.studyQueueIds.length && state.studyQueueIds.length > 0) {
+                state.currentIndex = state.studyQueueIds.length - 1;
+              } else if (state.studyQueueIds.length === 0) {
+                state.currentIndex = 0;
+              }
+              persist();
+              renderApp();
+              showToast('카드를 삭제했습니다.');
+            }
+          } else if (action === 'filter-status') {
+            state.statusFilter = target.getAttribute('data-status') || 'all';
+            renderApp();
+          } else if (action === 'open-new-deck') {
+            state.deckModal = { open: true, mode: 'create', targetDeckId: '', title: '', category: '', error: '' };
+            renderModals();
+          } else if (action === 'rename-deck') {
+            e.stopPropagation();
+            var rdid = target.getAttribute('data-deck-id');
+            var rd = state.decks.find(function (d) { return d.id === rdid; });
+            if (rd) {
+              state.deckModal = { open: true, mode: 'rename', targetDeckId: rd.id, title: rd.title, category: rd.category || '', error: '' };
+              renderModals();
+            }
+          } else if (action === 'delete-deck') {
+            e.stopPropagation();
+            var ddid = target.getAttribute('data-deck-id');
+            if (state.decks.length > 1) {
+              state.confirmModal = { open: true, type: 'delete-deck', deckId: ddid };
+              renderModals();
+            }
+          } else if (action === 'open-reset-progress') {
+            state.confirmModal = { open: true, type: 'reset-progress', deckId: activeDeck ? activeDeck.id : '' };
+            renderModals();
+          } else if (action === 'open-restore-samples') {
+            state.confirmModal = { open: true, type: 'restore-samples', deckId: '' };
+            renderModals();
+          } else if (action === 'close-modals') {
+            state.deckModal.open = false;
+            state.confirmModal.open = false;
+            state.transferModal.open = false;
+            renderModals();
+          } else if (action === 'confirm-delete-deck') {
+            var delId = state.confirmModal.deckId;
+            var delDeck = state.decks.find(function (d) { return d.id === delId; });
+            state.decks = state.decks.filter(function (d) { return d.id !== delId; });
+            if (state.activeDeckId === delId && state.decks[0]) {
+              state.activeDeckId = state.decks[0].id;
+              initQueueForDeck(state.decks[0], 'all');
+            }
+            state.confirmModal.open = false;
+            persist();
+            renderApp();
+            if (delDeck) showToast('“' + delDeck.title + '” 암기장을 삭제했습니다.');
+          } else if (action === 'confirm-reset-progress') {
+            if (activeDeck) {
+              activeDeck.cards.forEach(function (c) { c.status = 'unstudied'; });
+              initQueueForDeck(activeDeck, 'all');
+              state.confirmModal.open = false;
+              persist();
+              renderApp();
+              showToast('“' + activeDeck.title + '” 학습 기록을 초기화했습니다.');
+            }
+          } else if (action === 'confirm-factory-reset') {
+            var fresh = createSampleDecks();
+            state.decks = fresh;
+            state.activeDeckId = fresh[0].id;
+            initQueueForDeck(fresh[0], 'all');
+            state.confirmModal.open = false;
+            persist();
+            renderApp();
+            showToast('모든 암기장을 초기 기본 상태로 되돌렸습니다.');
+          } else if (action === 'confirm-restore-samples') {
+            var samples = createSampleDecks();
+            var updated = state.decks.map(function (d) {
+              var m = samples.find(function (s) { return s.id === d.id; });
+              return m ? m : d;
+            });
+            samples.forEach(function (s) {
+              if (!updated.some(function (u) { return u.id === s.id; })) updated.push(s);
+            });
+            state.decks = updated;
+            state.confirmModal.open = false;
+            persist();
+            renderApp();
+            showToast('기본 샘플 암기장 3종을 복원했습니다.');
+          } else if (action === 'open-transfer') {
+            state.transferModal = {
+              open: true,
+              tab: target.getAttribute('data-tab') || 'export',
+              copiedKey: '',
+              importRaw: '',
+              importTitle: '',
+              importCategory: '',
+              filenameTitle: '',
+            };
+            renderModals();
+          } else if (action === 'switch-transfer-tab') {
+            state.transferModal.tab = target.getAttribute('data-tab') || 'export';
+            renderModals();
+          } else if (action === 'copy-export' && activeDeck) {
+            var kind = target.getAttribute('data-kind');
+            var content = kind === 'text' ? exportDeckToText(activeDeck) : exportDeckToJson(activeDeck);
+            copyText(content).then(function (ok) {
+              if (ok) {
+                state.transferModal.copiedKey = kind;
+                renderModals();
+                showToast(kind === 'text' ? '단어 : 뜻 텍스트를 복사했습니다.' : 'JSON 백업 데이터를 복사했습니다.');
+                setTimeout(function () {
+                  state.transferModal.copiedKey = '';
+                  if (state.transferModal.open) renderModals();
+                }, 1800);
+              } else {
+                showToast('복사에 실패했습니다. 파일 내보내기를 이용해 주세요.');
+              }
+            });
+          } else if (action === 'download-export' && activeDeck) {
+            var dKind = target.getAttribute('data-kind');
+            var safeName = (activeDeck.title || 'flashcard').replace(/[\\/:*?"<>|]/g, '_');
+            if (dKind === 'text') {
+              downloadBlob(safeName + '.txt', new Blob([exportDeckToText(activeDeck)], { type: 'text/plain;charset=utf-8' }));
+              showToast('“' + safeName + '.txt” 파일을 저장했습니다.');
+            } else {
+              downloadBlob(safeName + '.json', new Blob([exportDeckToJson(activeDeck)], { type: 'application/json;charset=utf-8' }));
+              showToast('“' + safeName + '.json” 백업 파일을 저장했습니다.');
+            }
+          } else if (action === 'trigger-import-file') {
+            var fi = document.getElementById('import-file-input');
+            if (fi) fi.click();
+          } else if (action === 'import-into-current' || action === 'import-as-new') {
+            var parsedRes = parseImportedDeckContent(state.transferModal.importRaw, state.transferModal.filenameTitle || '불러온 암기장');
+            if (!parsedRes.ok) return;
+            if (action === 'import-into-current' && activeDeck) {
+              activeDeck.cards = activeDeck.cards.concat(parsedRes.cards);
+              if (state.studyMode === 'all') {
+                state.studyQueueIds = state.studyQueueIds.concat(parsedRes.cards.map(function (c) { return c.id; }));
+                state.sessionCompleted = false;
+              }
+              state.transferModal.open = false;
+              persist();
+              renderApp();
+              showToast(parsedRes.cards.length + '장의 카드를 현재 암기장에 추가했습니다.');
+            } else {
+              var newTitle = (state.transferModal.importTitle || '').trim() || '불러온 암기장';
+              var newCat = (state.transferModal.importCategory || '').trim() || '불러온 자료';
+              var newDeck = { id: generateId('deck'), title: newTitle, category: newCat, cards: parsedRes.cards, createdAt: Date.now() };
+              state.decks.unshift(newDeck);
+              state.activeDeckId = newDeck.id;
+              initQueueForDeck(newDeck, 'all');
+              state.activeView = 'study';
+              state.transferModal.open = false;
+              persist();
+              renderApp();
+              showToast('“' + newTitle + '” 암기장(' + parsedRes.cards.length + '장)을 불러왔습니다.');
+            }
+          } else if (action === 'download-single-html') {
+            var htmlStr = buildStandaloneHtmlString();
+            downloadBlob('index.html', new Blob([htmlStr], { type: 'text/html;charset=utf-8' }));
+            showToast('단일 index.html 파일 다운로드를 시작했습니다.');
+          } else if (action === 'download-github-zip') {
+            var singleHtml = buildStandaloneHtmlString();
+            var zipBlob = createZipBlob([
+              { path: 'smart-flashcard-maker/index.html', content: singleHtml },
+              { path: 'smart-flashcard-maker/README.md', content: buildStaticReadme() },
+            ]);
+            downloadBlob('smart-flashcard-maker.zip', zipBlob);
+            showToast('GitHub·Vercel 배포용 ZIP(index.html, README.md)을 다운로드했습니다.');
+          }
+        });
+
+        function gradeCard(cardId, status) {
+          var activeDeck = getActiveDeck();
+          if (!activeDeck) return;
+          activeDeck.cards.forEach(function (c) {
+            if (c.id === cardId) c.status = status;
+          });
+          state.isFlipped = false;
+
+          if (state.studyMode === 'review') {
+            if (status === 'mastered') {
+              var nextQ = state.studyQueueIds.filter(function (id) { return id !== cardId; });
+              state.studyQueueIds = nextQ;
+              if (nextQ.length === 0) {
+                state.currentIndex = 0;
+                state.sessionCompleted = true;
+                persist();
+                renderApp();
+                showToast('오답 복습 완료! 모든 오답을 맞혔습니다.');
+                return;
+              }
+              if (state.currentIndex >= nextQ.length) state.currentIndex = 0;
+              persist();
+              renderApp();
+              showToast('정답! 오답 목록에서 제외되었습니다. (남은 오답 ' + nextQ.length + '장)');
+              return;
+            }
+            if (state.studyQueueIds.length <= 1) {
+              state.currentIndex = 0;
+              persist();
+              renderApp();
+              showToast('오답 목록에 유지됩니다. 다시 한 번 확인해 보세요.');
+            } else {
+              state.currentIndex = (state.currentIndex + 1) % state.studyQueueIds.length;
+              persist();
+              renderApp();
+            }
+            return;
+          }
+
+          if (state.currentIndex + 1 < state.studyQueueIds.length) {
+            state.currentIndex += 1;
+          } else {
+            state.sessionCompleted = true;
+          }
+          persist();
+          renderApp();
+        }
+
+        function startReviewOnly() {
+          var activeDeck = getActiveDeck();
+          if (!activeDeck) return;
+          var reviewCards = activeDeck.cards.filter(function (c) { return c.status === 'review'; });
+          if (reviewCards.length === 0) {
+            showToast('다시 복습할 카드가 없습니다.');
+            return;
+          }
+          initQueueForDeck(activeDeck, 'review');
+          renderApp();
+          showToast('오답 카드 ' + reviewCards.length + '장을 모아 복습을 시작합니다.');
+        }
+
+        // Input & Form Listeners
+        document.addEventListener('input', function (e) {
+          var el = e.target;
+          if (!el) return;
+          if (el.id === 'single-front') {
+            state.singleFront = el.value;
+            state.singleError = '';
+          } else if (el.id === 'single-back') {
+            state.singleBack = el.value;
+            state.singleError = '';
+          } else if (el.id === 'bulk-textarea') {
+            state.bulkText = el.value;
+            // Re-render preview cleanly while preserving cursor
+            var start = el.selectionStart;
+            var end = el.selectionEnd;
+            renderApp();
+            var nextTa = document.getElementById('bulk-textarea');
+            if (nextTa) {
+              nextTa.focus();
+              nextTa.setSelectionRange(start, end);
+            }
+          } else if (el.id === 'card-search-input') {
+            state.searchQuery = el.value;
+            var sStart = el.selectionStart;
+            var sEnd = el.selectionEnd;
+            renderApp();
+            var nextSearch = document.getElementById('card-search-input');
+            if (nextSearch) {
+              nextSearch.focus();
+              nextSearch.setSelectionRange(sStart, sEnd);
+            }
+          } else if (el.id === 'edit-front-input') {
+            state.editFront = el.value;
+          } else if (el.id === 'edit-back-input') {
+            state.editBack = el.value;
+          } else if (el.id === 'deck-title-field') {
+            state.deckModal.title = el.value;
+            state.deckModal.error = '';
+          } else if (el.id === 'deck-category-field') {
+            state.deckModal.category = el.value;
+          } else if (el.id === 'import-raw-textarea') {
+            state.transferModal.importRaw = el.value;
+            var p = parseImportedDeckContent(el.value, state.transferModal.filenameTitle || '불러온 암기장');
+            if (p.ok) {
+              state.transferModal.importTitle = p.title;
+              state.transferModal.importCategory = p.category;
+            }
+            var iStart = el.selectionStart;
+            var iEnd = el.selectionEnd;
+            renderModals();
+            var nextImp = document.getElementById('import-raw-textarea');
+            if (nextImp) {
+              nextImp.focus();
+              nextImp.setSelectionRange(iStart, iEnd);
+            }
+          } else if (el.id === 'imp-title') {
+            state.transferModal.importTitle = el.value;
+          } else if (el.id === 'imp-cat') {
+            state.transferModal.importCategory = el.value;
+          }
+        });
+
+        document.addEventListener('change', function (e) {
+          var el = e.target;
+          if (el && el.id === 'import-file-input' && el.files && el.files[0]) {
+            var file = el.files[0];
+            file
+              .text()
+              .then(function (txt) {
+                var base = file.name.replace(/\.(json|txt)$/i, '').trim();
+                state.transferModal.filenameTitle = base;
+                state.transferModal.importRaw = txt;
+                var p = parseImportedDeckContent(txt, base || '불러온 암기장');
+                if (p.ok) {
+                  state.transferModal.importTitle = p.title;
+                  state.transferModal.importCategory = p.category;
+                }
+                renderModals();
+              })
+              .catch(function () {
+                showToast('파일을 읽는 중 오류가 발생했습니다.');
+              });
+          }
+        });
+
+        document.addEventListener('submit', function (e) {
+          var form = e.target;
+          if (!form) return;
+          if (form.id === 'single-card-form') {
+            e.preventDefault();
+            var f = state.singleFront.trim();
+            var b = state.singleBack.trim();
+            var activeDeck = getActiveDeck();
+            if (!f || !b) {
+              state.singleError = '앞면(질문/단어)과 뒷면(정답/뜻)을 모두 입력해 주세요.';
+              renderApp();
+              return;
+            }
+            if (activeDeck) {
+              var nc = { id: generateId('card'), front: f, back: b, status: 'unstudied', createdAt: Date.now() };
+              activeDeck.cards.push(nc);
+              if (state.studyMode === 'all') {
+                state.studyQueueIds.push(nc.id);
+                state.sessionCompleted = false;
+              }
+              state.singleFront = '';
+              state.singleBack = '';
+              state.singleError = '';
+              persist();
+              renderApp();
+              showToast('새 카드를 추가했습니다.');
+            }
+          } else if (form.id === 'deck-modal-form') {
+            e.preventDefault();
+            var title = state.deckModal.title.trim();
+            var cat = state.deckModal.category.trim() || '개인 학습';
+            if (!title) {
+              state.deckModal.error = '암기장 이름을 입력해 주세요.';
+              renderModals();
+              return;
+            }
+            if (state.deckModal.mode === 'create') {
+              var nd = { id: generateId('deck'), title: title, category: cat, cards: [], createdAt: Date.now() };
+              state.decks.unshift(nd);
+              state.activeDeckId = nd.id;
+              initQueueForDeck(nd, 'all');
+              state.activeView = 'manage';
+              state.manageTab = 'single';
+              state.deckModal.open = false;
+              persist();
+              renderApp();
+              showToast('“' + title + '” 암기장을 만들었습니다. 카드를 추가해 보세요.');
+            } else {
+              var td = state.decks.find(function (d) { return d.id === state.deckModal.targetDeckId; });
+              if (td) {
+                td.title = title;
+                td.category = cat;
+              }
+              state.deckModal.open = false;
+              persist();
+              renderApp();
+              showToast('암기장 정보를 수정했습니다.');
+            }
+          }
+        });
+
+        // Keyboard Shortcuts
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') {
+            if (state.deckModal.open || state.confirmModal.open || state.transferModal.open) {
+              state.deckModal.open = false;
+              state.confirmModal.open = false;
+              state.transferModal.open = false;
+              renderModals();
+              return;
+            }
+          }
+
+          var tag = e.target && e.target.tagName;
+          if (tag === 'INPUT' || tag === 'TEXTAREA' || (e.target && e.target.isContentEditable)) return;
+          if (state.deckModal.open || state.confirmModal.open || state.transferModal.open) return;
+          if (state.activeView !== 'study' || state.sessionCompleted) return;
+
+          var activeDeck = getActiveDeck();
+          if (!activeDeck) return;
+          var queueCards = state.studyQueueIds
+            .map(function (id) { return activeDeck.cards.find(function (c) { return c.id === id; }); })
+            .filter(Boolean);
+          var currentCard = queueCards[state.currentIndex];
+          if (!currentCard) return;
+
+          if (e.code === 'Space' || (e.key === 'Enter' && e.target && e.target.id === 'study-flashcard')) {
+            e.preventDefault();
+            state.isFlipped = !state.isFlipped;
+            var cardEl = document.getElementById('study-flashcard');
+            if (cardEl) cardEl.classList.toggle('is-flipped', state.isFlipped);
+          } else if (e.key === 'x' || e.key === 'X' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            gradeCard(currentCard.id, 'review');
+          } else if (e.key === 'o' || e.key === 'O' || e.key === 'ArrowRight') {
+            e.preventDefault();
+            gradeCard(currentCard.id, 'mastered');
+          }
+        });
+
+        // Initial Render
+        renderApp();
+      })();
+    </script></body></html>
